@@ -1,5 +1,6 @@
 package com.cedarsoftware.util.io;
 
+import java.awt.JobAttributes.DefaultSelectionType;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -34,6 +35,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.google.common.base.Defaults;
+import com.google.gson.internal.Primitives;
 
 /**
  * Output a Java object graph in JSON format.  This code handles cyclic
@@ -2053,6 +2057,22 @@ public class JsonWriter implements Closeable, Flushable
         {   // Do not write transient fields
             return first;
         }
+
+        Object o;
+        try
+        {
+            o = field.get(obj);
+        }
+        catch (Exception ignored)
+        {
+            o = null;
+        }
+
+        if (o == null || o.equals(Defaults.defaultValue(field.getType())))
+        {
+            return first;
+        }
+        
         if (first)
         {
             first = false;
@@ -2065,22 +2085,6 @@ public class JsonWriter implements Closeable, Flushable
 
         writeJsonUtf8String(fieldName, out);
         out.write(':');
-
-        Object o;
-        try
-        {
-            o = field.get(obj);
-        }
-        catch (Exception ignored)
-        {
-            o = null;
-        }
-
-        if (o == null)
-        {    // don't quote null
-            out.write("null");
-            return first;
-        }
 
         Class type = field.getType();
         boolean forceType = o.getClass() != type;     // If types are not exactly the same, write "@type" field

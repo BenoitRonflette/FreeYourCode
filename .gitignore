@@ -1,4 +1,6 @@
-.DS_Store
-.svn/
-CVS/
-.idea/
+/target
+
+.settings
+.classpath
+
+.project
