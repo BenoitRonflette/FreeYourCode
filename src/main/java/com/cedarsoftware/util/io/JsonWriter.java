@@ -1,6 +1,5 @@
 package com.cedarsoftware.util.io;
 
-import java.awt.JobAttributes.DefaultSelectionType;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -37,7 +36,6 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.common.base.Defaults;
-import com.google.gson.internal.Primitives;
 
 /**
  * Output a Java object graph in JSON format.  This code handles cyclic

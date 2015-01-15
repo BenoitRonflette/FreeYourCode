@@ -3906,7 +3906,7 @@ public class TestJsonReaderWriter
     @Test
     public void writeJsonObjectMapWithStringKeys() throws Exception
     {
-        String json = "{\n  \"@type\":\"java.util.HashMap\",\n  \"age\":\"36\",\n  \"name\":\"chris\"\n}";
+        String json = "{\r\n  \"@type\":\"java.util.HashMap\",\r\n  \"age\":\"36\",\r\n  \"name\":\"chris\"\r\n}";
         Map map = new HashMap();
         map.put("name", "chris");
         map.put("age", "36");
