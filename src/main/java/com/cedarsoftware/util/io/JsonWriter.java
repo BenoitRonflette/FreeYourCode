@@ -37,6 +37,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.hibernate.Hibernate;
+
 import com.google.common.base.Defaults;
 
 /**
@@ -910,7 +912,7 @@ public class JsonWriter implements Closeable, Flushable
             }
 
             final Object o = field.get(obj);
-            if (o != null)
+            if (o != null && Hibernate.isInitialized(o))
             {
                 stack.addFirst(o);
             }
