@@ -32,12 +32,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Map.Entry; 
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.hibernate.Hibernate;
+import com.cedarsoftware.util.io.JsonObjectFilter;
 
 import com.google.common.base.Defaults;
 
@@ -102,6 +102,9 @@ public class JsonWriter implements Closeable, Flushable
     private final Writer out;
     long identity = 1;
     private int depth = 0;
+    
+    private static JsonObjectFilter filter;
+    
     // _args is using ThreadLocal so that static inner classes can have access to them
     static final ThreadLocal<Map<String, Object>> _args = new ThreadLocal<Map<String, Object>>()
     {
@@ -849,13 +852,17 @@ public class JsonWriter implements Closeable, Flushable
             }
             else if (Collection.class.isAssignableFrom(clazz))
             {
+            	//Gestion des persistent set
+            	if(isConsidered(obj)){
+
                 for (Object item : (Collection)obj)
-                {
-                    if (item != null)
+                { 
+                    if (isConsidered(item))
                     {
                         stack.addFirst(item);
                     }
                 }
+            	}
             }
             else
             {
@@ -910,9 +917,8 @@ public class JsonWriter implements Closeable, Flushable
             {    // speed up: primitives (and Dates/Strings/Numbers considered logical primitive by json-io) cannot reference another object
                 return;
             }
-
             final Object o = field.get(obj);
-            if (o != null && Hibernate.isInitialized(o))
+            if (isConsidered(o))
             {
                 stack.addFirst(o);
             }
@@ -2133,7 +2139,7 @@ public class JsonWriter implements Closeable, Flushable
         }
 
 
-        if (o == null || o.equals(Defaults.defaultValue(field.getType())))
+        if (!isConsidered(o) || o.equals(Defaults.defaultValue(field.getType())))
         {
             return first;
         }
@@ -2324,4 +2330,17 @@ public class JsonWriter implements Closeable, Flushable
         Long id = objsReferenced.get(o);
         return id == null ? null : Long.toString(id);
     }
+
+    private boolean isConsidered(Object o){
+    	if(filter != null){
+    		return !filter.isFiltered(o);
+    	}
+    	
+    	return true;
+    }
+    
+    public static void setFilter(JsonObjectFilter jsonFilter){
+    	filter = jsonFilter;
+    }
+    
 }
