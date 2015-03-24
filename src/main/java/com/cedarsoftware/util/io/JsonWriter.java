@@ -980,6 +980,8 @@ public class JsonWriter implements Closeable, Flushable
 
     protected void writeImpl(Object obj, boolean showType) throws IOException
     {
+    	obj = prepareToWrite(obj);
+    	
         if (obj == null)
         {
             out.write("null");
@@ -1864,6 +1866,7 @@ public class JsonWriter implements Closeable, Flushable
             ClassMeta meta = getDeepDeclaredFields(type);
             Field field = meta.get(fieldName);
             return field != null && (value.getClass() == field.getType());
+            //FIXME cas proxy ici ?! transform ?!
         }
         return false;
     }
@@ -2138,7 +2141,7 @@ public class JsonWriter implements Closeable, Flushable
             o = null;
         }
 
-
+//FIXME why considered useful here ?!!!
         if (!isConsidered(o) || o.equals(Defaults.defaultValue(field.getType())))
         {
             return first;
@@ -2158,7 +2161,8 @@ public class JsonWriter implements Closeable, Flushable
         out.write(':');
 
         Class type = field.getType();
-        boolean forceType = o.getClass() != type;     // If types are not exactly the same, write "@type" field
+        //FIXME prepare deux fois, pas très propre ?!!!
+        boolean forceType = prepareToWrite(o).getClass() != type;     // If types are not exactly the same, write "@type" field
 
         if (JsonReader.isPrimitive(type))
         {
@@ -2337,6 +2341,13 @@ public class JsonWriter implements Closeable, Flushable
     	}
     	
     	return true;
+    }
+    
+    private Object prepareToWrite(Object o){
+    	if(filter != null){
+    		return filter.prepareToWrite(o);
+    	}
+    	return o;
     }
     
     public static void setFilter(JsonObjectFilter jsonFilter){
