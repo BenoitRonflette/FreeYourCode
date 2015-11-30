@@ -1992,7 +1992,7 @@ public class JsonWriter implements Closeable, Flushable
         {
             Entry att2value = (Entry) i.next();
             output.write("\"");
-            output.write((String) att2value.getKey());
+            output.write(String.valueOf(att2value.getKey()));
             output.write("\":");
 
             writeCollectionElement(att2value.getValue());
