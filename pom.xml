@@ -3,8 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>Pretty JSON</name>
-	<groupId>com.prettyjson</groupId>
-	<artifactId>json-io-prettyjson</artifactId>
+	<groupId>com.freeyourcode</groupId>
+	<artifactId>prettyjson</artifactId>
 	<packaging>jar</packaging>
 	<version>0.0.1-SNAPSHOT</version>
 	<description>Java JSON serialization skipping null values</description>
@@ -57,6 +57,11 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>13.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.3</version>
 		</dependency>
 	</dependencies>
 </project>
