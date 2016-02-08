@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent port="8095" autoStart="true">
+	<logger class="com.freeyourcode.testgenerator.test.agent.MockTestLogger" file="./src/test/java/com/freeyourcode/testgenerator/test/agent/generated/GeneratedByAgentTestSpyPluginTest.java"  package="com.freeyourcode.testgenerator.test.agent.generated"></logger>
+	<plugins>
+		<plugin
+			class="com.freeyourcode.testgenerator.agent.plugins.HibernateCompatibilityPlugin"></plugin>
+		<plugin class="com.freeyourcode.testgenerator.agent.plugins.TestGeneratorPlugin">
+			<includes>
+				<class>com.freeyourcode.testgenerator.test.ClassCallingClassCallingTestedClassWithFieldInjection</class>
+			</includes>
+		</plugin>
+		<plugin class="com.freeyourcode.testgenerator.agent.plugins.MockPlugin">
+			<includes>
+				<class>com.freeyourcode.testgenerator.test.TestedClass</class>
+			</includes>
+		</plugin>
+		<plugin class="com.freeyourcode.testgenerator.agent.plugins.SpyPlugin">
+			<includes>
+				<class>com.freeyourcode.testgenerator.test.ClassCallingTestedClassWithFieldInjection</class>
+			</includes>
+		</plugin>
+	</plugins>
+</agent>

@@ -1,0 +1,76 @@
+html, body{
+margin:0;
+padding:0;
+}
+
+.container-fluid{
+background-color:#f5f5f5;
+border-bottom:1px solid #cccccc;
+margin-bottom:20px;
+}
+
+#logo img{
+padding-left:18px;
+padding-top:8px;
+}
+
+a{
+font-family:Tahoma;
+color:blue;
+text-decoration: none;
+color:#93a9c0;
+}
+
+a:hover{
+color:#93a9c0;
+}
+
+#menu{
+text-align:center;
+padding-left:50px;
+padding-top:35px;
+}
+
+#menu a{
+color:#3f3636;
+font-weight:bold;
+font-size:14px;
+padding-right:50px;
+}
+
+
+
+.carousel-indicators li {
+  background-color: #999 !important;
+  background-color: rgba(70,70,70,.25) !important;
+}
+
+.carousel-indicators .active {
+  background-color: #444 !important;
+}
+.carousel-control.left, .carousel-control.right {
+    background-image: none
+}
+
+#demoCarousel{
+margin-top:60px;
+margin-bottom:100px;
+}
+
+.glyphicon, .carousel-caption{
+color:#3f3636;
+}
+
+.carousel-caption{
+right:0px;
+bottom:0px;
+text-align:right;
+}
+
+.lead{
+font-size:16px;
+}
+
+.carousel-indicators{
+bottom:-20px;
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent port="8094" autoStart="true">
+	<logger class="com.freeyourcode.testgenerator.test.agent.MockTestLogger"  file="./src/test/java/com/freeyourcode/testgenerator/test/agent/generated/GeneratedByAgentTestGeneratorPluginTest.java" package="com.freeyourcode.testgenerator.test.agent.generated" />
+	<plugins>
+		<plugin
+			class="com.freeyourcode.testgenerator.agent.plugins.HibernateCompatibilityPlugin"></plugin>
+		<plugin class="com.freeyourcode.testgenerator.agent.plugins.TestGeneratorPlugin">
+			<includes>
+				<class>com.freeyourcode.testgenerator.test.TestedClass</class>
+			</includes>
+		</plugin>
+	</plugins>
+</agent>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link href="lib/bootstrap/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="lib/highlight/9.1.0/styles/default.css">
+		<link rel="stylesheet" href="lib/highlight/9.1.0/styles/agate.css">
+		<link href="css/design.css" rel="stylesheet" media="all" type="text/css"> 
+        <title>FreeYourCode - A Legacy Code Killer</title>
+    </head>
+
+    <body>
+	<div class="container-fluid" style="padding:0px;">
+	<div class="row-fluid" style="width:100%">
+		  <div class="col-xs-6 col-md-2"><a href="index.html" id="logo"><img src="data/img/logo.png"/></a></div>
+		  <div class="col-xs-6 col-md-2 col-md-push-8" style="position:relative;">
+		  <a href="https://github.com/BenoitRonflette/FreeYourCode"><img style="position:absolute;right:0px;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+		  </div>
+		  <div class="col-xs-12 col-md-8 col-md-pull-2">
+		  	<div id="menu">
+				<a href="gettingStarted.html">Getting started</a> <a href="docs.html">Docs</a> <a href="download.html">Download</a> <a href="about.html">About</a>
+			</div>
+		  </div>
+
+	</div></div>
+	
+	<div class="container">
+	
+<h2>Start your Java program with the Agent</h2>
+
+Add in VM arguments:
+<pre><code class="bash">-javaagent:pathToAgent\test-generator-0.0.1-SNAPSHOT-jar-with-dependencies.jar=config=pathToTheAgentConf\configuration.xml</code></pre>
+
+<br/>
+<h2>Control the Agent from your Web Browser</h2>
+
+<p>When the Agent is started, you can take its control from a web browser. Go to http://localhost:port. Port is a required configuration parameter. </p>
+
+<p>With your browser, you can choose when beginning to listen to the code or generating the tests.</p>
+
+
+<center><img src="data/img/server.png" style="border:1px solid #cccccc;"/><br/>
+	<i>When you click on "start killing", the core begins to consider the listened methods, on "stop killing", generated tests are written in the indicated file.</i></center>
+
+<br/>
+If you forget to click on "stop killing" sing the server interface before killing your Java application, a shutdownhook is called. However, according to your environment, there is no guarantee about this call.
+
+
+<br/><br/>
+
+<h2>Configuration file</h2>
+
+<ul><b>Main parameters</b>:
+<li><b><i>port</i></b>: the used port to be able to control the Agent (mandatory),</li>
+<li><b><i>autoStart</i></b>: if the agent begins to listen to the code when it starts (optionnal, default false),</li>
+<li><b><i>testEqualityOnStubbing</i></b>: when a method is mocked with Mockito, if the method parameters are checked (optionnal, default true).</li>
+</ul>
+
+<br/>
+
+<ul><b>Logger classes</b>:
+<li>com.freeyourcode.testgenerator.logger.DefaultTestLogger: generated tests are logged in consol (this is the default one if no logger),</li>
+<li>com.freeyourcode.testgenerator.logger.FileTestLogger: generated tests are written in a file,
+<ul><b>FileTestLogger parameters</b>:
+<li><b><i>file</i></b>: generated file name (mandatory),</li>
+<li><b><i>package</i></b>: package used by the generated file name (mandatory),</li>
+<li><b><i>fullInjection</i></b>: if the generated test class will use the full injection to resolve the @mock. By default, mock injection is the Mockito default one, i.e. only null fields are injected. If true, one class instance is created each class with @Mock fields then injected. So, the circular dependencies can be resolved too. (optionnal, default false).</li>
+</ul>
+</li>
+</ul>
+<br/>
+
+<pre><code class="html">&lt;agent port="8094" autoStart="true" testEqualityOnStubbing="true"&gt;
+	&lt;logger class="com.freeyourcode.testgenerator.logger.FileTestLogger"  file="/pathTo/GeneratedClassName.java" package="com.freeyourcode.generated"/&gt;
+	&lt;plugins&gt;
+		&lt;!-- add here plugins --&gt;
+	&lt;/plugins&gt;
+&lt;/agent&gt;
+</code></pre>
+	<br/>
+<h3>Plugins</h3>
+<br/>
+<h4>Basic test generator</h4>
+
+<p>This plugin generates a TestNG test unit for each call to a public method with the same parameters and checking the result value or the thrown exception.</p>
+<p>You can include or exclude several classes and methods. It's the union between all inclusion which builds the final inclusion. Exclusion patterns are applied after.</p>
+<p>All values are considered as Java regex patterns.</p>
+
+<pre><code class="html">&lt;agent port="8094"&gt;
+	&lt;logger class="com.freeyourcode.testgenerator.logger.FileTestLogger"  file="/pathTo/GeneratedClassName.java" package="com.freeyourcode.generated"/&gt;
+	&lt;plugins&gt;
+		&lt;plugin class="com.freeyourcode.testgenerator.agent.plugins.TestGeneratorPlugin"&gt;
+			&lt;includes&gt;
+				&lt;class&gt;com.freeyourcode.testgenerator.test.TestedClass&lt;/class&gt;
+				&lt;!-- all classes which match with Service pattern will be listened --&gt;
+				&lt;class&gt;com.freeyourcode.testgenerator.test.*Service&lt;/class&gt;
+				&lt;!-- Only MyFactory.create() is listened in class MyFactory --&gt;
+				&lt;class&gt;com.freeyourcode.testgenerator.test.MyFactory
+					&lt;method&gt;create\(\)&lt;/method&gt;
+				&lt;/class&gt;
+			&lt;/includes&gt;
+			&lt;excludes&gt;
+				&lt;!-- all services except IgnoredService ! --&gt;
+				&lt;class&gt;com.freeyourcode.testgenerator.test.IgnoredService&lt;/class&gt;
+				&lt;!-- We don't want to listen all TestedClass public methods. --&gt;
+				&lt;method&gt;com.freeyourcode.testgenerator.test.TestedClass.getValue.*&lt;/method&gt;
+			&lt;/excludes&gt;
+		&lt;/plugin&gt;
+	&lt;/plugins&gt;
+&lt;/agent&gt;
+</code></pre>
+
+<br/><br/>
+
+<h4>Mock Plugin</h4>
+tests pr le refactoring, pr couvrir du legacy
+<p>When you are testing an application, you don't want to test fully. So you have to mock a part of it it (for example when the code execution reaches a DAO, a black box, etc) indicating what should be mocked. Supports the include and exclude mechanisms.</p>
+
+<pre><code class="html">&lt;agent port="8099"&gt;
+	&lt;logger class="com.freeyourcode.testgenerator.logger.FileTestLogger"  file="/pathTo/GeneratedClassName.java" package="com.freeyourcode.generated"/&gt;
+	&lt;plugins&gt;
+		&lt;plugin class="com.freeyourcode.testgenerator.agent.plugins.TestGeneratorPlugin"&gt;
+			&lt;includes&gt;
+				&lt;class&gt;com.freeyourcode.testgenerator.test.ClassCallingTestedClassWithFieldInjection&lt;/class&gt;
+			&lt;/includes&gt;
+		&lt;/plugin&gt;
+		&lt;plugin class="com.freeyourcode.testgenerator.agent.plugins.MockPlugin"&gt;
+			&lt;includes&gt;
+				&lt;class&gt;com.freeyourcode.testgenerator.test.TestedClass&lt;/class&gt;
+			&lt;/includes&gt;
+		&lt;/plugin&gt;
+	&lt;/plugins&gt;
+&lt;/agent&gt;
+</code></pre>
+
+<br/><br/>
+
+<h4>Spy plugin</h4>
+
+<p>Useful to make integeration testing. You can test a large part of your application from inputs. Mock classes are the inputs, spy classes are recreated and injected (if necessary). Supports the include and exclude mechanisms.</p>
+
+<pre><code class="html">&lt;agent port="8095"&gt;
+	&lt;logger class="com.freeyourcode.testgenerator.logger.FileTestLogger"  file="/pathTo/GeneratedClassName.java" package="com.freeyourcode.generated"/&gt;
+	&lt;plugins&gt;
+		&lt;plugin class="com.freeyourcode.testgenerator.agent.plugins.TestGeneratorPlugin"&gt;
+			&lt;includes&gt;
+				&lt;class&gt;com.freeyourcode.testgenerator.test.ClassCallingClassCallingTestedClassWithFieldInjection&lt;/class&gt;
+			&lt;/includes&gt;
+		&lt;/plugin&gt;
+		&lt;plugin class="com.freeyourcode.testgenerator.agent.plugins.MockPlugin"&gt;
+			&lt;includes&gt;
+				&lt;class&gt;com.freeyourcode.testgenerator.test.TestedClass&lt;/class&gt;
+			&lt;/includes&gt;
+		&lt;/plugin&gt;
+		&lt;plugin class="com.freeyourcode.testgenerator.agent.plugins.SpyPlugin"&gt;
+			&lt;includes&gt;
+				&lt;class&gt;com.freeyourcode.testgenerator.test.ClassCallingTestedClassWithFieldInjection&lt;/class&gt;
+			&lt;/includes&gt;
+		&lt;/plugin&gt;
+	&lt;/plugins&gt;
+&lt;/agent&gt;
+</code></pre>
+
+<br/><br/>
+
+
+<h4>Hibernate compatibility plugin</h4>
+
+<p>Ensure compatibility with Hibernate. I.e. manage the proxy objects (get the underlying object before serializing into JSON) and the objects implicitly loaded during the code execution (try to retrieve an acceptable state before genering the test).</p>
+
+<pre><code class="html">&lt;agent port="8094"&gt;
+	&lt;logger class="com.freeyourcode.testgenerator.logger.FileTestLogger"  file="/pathTo/GeneratedClassName.java" package="com.freeyourcode.generated"/&gt;
+	&lt;plugins&gt;
+		&lt;plugin
+			class="com.freeyourcode.testgenerator.agent.plugins.HibernateCompatibilityPlugin"&gt;&lt;/plugin&gt;
+		&lt;plugin class="com.freeyourcode.testgenerator.agent.plugins.TestGeneratorPlugin"&gt;
+			&lt;includes&gt;
+				&lt;class&gt;com.freeyourcode.testgenerator.test.TestedClass&lt;/class&gt;
+			&lt;/includes&gt;
+		&lt;/plugin&gt;
+	&lt;/plugins&gt;
+&lt;/agent&gt;
+</code></pre>
+
+
+<br/><br/>
+
+	</div>
+	
+	
+
+	<script src="lib/highlight/9.1.0/highlight.pack.js"></script>
+	<script src="lib/jquery/1.12.0/jquery-1.12.0.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="lib/bootstrap/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+	
+	<script>hljs.initHighlightingOnLoad();</script>
+		
+	</body> 
+</html>

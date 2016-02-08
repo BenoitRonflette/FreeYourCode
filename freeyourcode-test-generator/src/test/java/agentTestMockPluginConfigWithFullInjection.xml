@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent port="8098" autoStart="true">
+	<logger class="com.freeyourcode.testgenerator.test.agent.MockTestLogger" file="./src/test/java/com/freeyourcode/testgenerator/test/agent/generated/GeneratedByAgentTestMockPluginWithFullInjectionTest.java"  package="com.freeyourcode.testgenerator.test.agent.generated" fullInjection="true"></logger>
+	<plugins>
+		<plugin
+			class="com.freeyourcode.testgenerator.agent.plugins.HibernateCompatibilityPlugin"></plugin>
+		<plugin class="com.freeyourcode.testgenerator.agent.plugins.TestGeneratorPlugin">
+			<includes>
+				<class>com.freeyourcode.testgenerator.test.ClassCallingTestedClassWithFieldIni</class>
+			</includes>
+		</plugin>
+		<plugin class="com.freeyourcode.testgenerator.agent.plugins.MockPlugin">
+			<includes>
+				<class>com.freeyourcode.testgenerator.test.TestedClass</class>
+			</includes>
+		</plugin>
+	</plugins>
+</agent>
