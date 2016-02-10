@@ -18,7 +18,7 @@ public class ListenerManager {
 	//FIXME est ce qu'utiliser la meme stack pour des methodes de meme nom avec differents params pourrait poser un probleme ?!
 	private final Map<String, MethodStack> listeners = new HashMap<String, MethodStack>();
 	private int testId = 0;
-	private final LinkedList<Event> pendingEvents = new LinkedList<Event>();
+	private final LinkedList<CallOnMock> pendingEvents = new LinkedList<CallOnMock>();
 
 	private TestGeneratorListenerFactory factory;
 	private final ListenerManagerConfig config;
@@ -80,7 +80,7 @@ public class ListenerManager {
 	public void onEventIn(Class<?> methodClass, String methodName, boolean voidMethod, Object[] params, Class<?>[] paramClasses, Class<?> returnedClass, boolean isStatic){
 		if(listeners.size() > 0){
 			MethodDescriptor descriptor = new MethodDescriptor(methodClass, methodName, voidMethod, paramClasses, isStatic);
-			Event event = new Event(descriptor, params, returnedClass);
+			CallOnMock event = new CallOnMock(descriptor, params, returnedClass);
 			pendingEvents.add(event);
 
 			for(MethodStack stack : listeners.values()){
@@ -115,7 +115,7 @@ public class ListenerManager {
 		}
 	}
 	
-	private void fireEventIsFinished(Event finishedEvent){
+	private void fireEventIsFinished(CallOnMock finishedEvent){
 		for(MethodStack stack : listeners.values()){
 			for(TestGeneratorListener listener : stack){
 				if(listener.canListenEvent(finishedEvent)){

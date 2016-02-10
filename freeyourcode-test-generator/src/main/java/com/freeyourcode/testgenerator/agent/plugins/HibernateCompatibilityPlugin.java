@@ -16,7 +16,7 @@ import org.w3c.dom.Element;
 
 import com.cedarsoftware.util.io.JsonObjectFilter;
 import com.cedarsoftware.util.io.JsonWriter;
-import com.freeyourcode.testgenerator.core.Event;
+import com.freeyourcode.testgenerator.core.CallOnMock;
 import com.freeyourcode.testgenerator.core.ListenerManager;
 import com.freeyourcode.testgenerator.core.ListenerManagerConfig;
 import com.freeyourcode.testgenerator.core.MethodDescriptor;
@@ -93,7 +93,7 @@ public class HibernateCompatibilityPlugin implements Plugin {
 					}
 					
 					@Override
-					public void onEventEnd(Event event) {
+					public void onEventEnd(CallOnMock event) {
 						//When hibernate is used with lazy mode, an object can contain proxies which are not initialized.
 						//Another object loading can perform the proxy object init so the object will be initialized in 
 						//the first object too. So we have to clone the initial object to keep the initial object (broking
@@ -113,12 +113,12 @@ public class HibernateCompatibilityPlugin implements Plugin {
 					}
 					
 					@Override
-					protected void generateStubs(String mockedClassObject,	MethodDescriptor eventMethod, List<Event> eventsOnThisMethod, String[] params) throws IOException {
-						for(Event event : eventsOnThisMethod){
+					protected void generateStubs(String mockedClassObject,	MethodDescriptor eventMethod, List<CallOnMock> eventsOnThisMethod, String[] params) throws IOException {
+						for(CallOnMock event : eventsOnThisMethod){
 							try{
 								//FIXME le faire sur l'enter et autres ?!
 								event.freezeResponse();
-								event.getParameters().freezeExit();
+								event.getParameters().freezeDiffsExit();
 							} catch (Throwable e) {
 								//FIXME
 								logger.onGenerationFail("The event params and response cannot be frozen on exit because "+e.getMessage(), new Exception(e));

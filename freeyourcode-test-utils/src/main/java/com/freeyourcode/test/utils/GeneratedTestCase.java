@@ -4,6 +4,7 @@ package com.freeyourcode.test.utils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -19,6 +20,7 @@ import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeMethod;
 
 import com.freeyourcode.test.utils.deepanalyser.DeepCopy;
+import com.freeyourcode.test.utils.deepanalyser.DeepDiffReverter;
 import com.freeyourcode.test.utils.matchers.BasicTypeMatcherEquals;
 import com.freeyourcode.test.utils.matchers.MatcherEquals;
 import com.google.common.base.Preconditions;
@@ -37,11 +39,12 @@ public class GeneratedTestCase extends PowerMockTestCase {
 	 */
 	protected <T> Answer<T> exitAnswer(final Object[] inputsOnExit, final T response){
 		return new Answer<T>() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public T answer(InvocationOnMock invocation) throws Throwable {
 				if(inputsOnExit != null){
 					for(int i = 0; i < inputsOnExit.length; i++){
-						DeepCopy.copy(inputsOnExit[i], invocation.getArguments()[i]);
+						DeepDiffReverter.revertDiffs(invocation.getArguments()[i], (Map<String, Object>) inputsOnExit[i]);
 					}
 				}
 				return response;

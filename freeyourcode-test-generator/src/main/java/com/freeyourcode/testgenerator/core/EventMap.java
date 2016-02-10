@@ -11,15 +11,15 @@ import com.google.common.collect.Lists;
 
 public class EventMap {
 	
-	private final Map<MethodDescriptor, ArrayListMultimap<List<Object>, Event>> eventsByCallByMethodDescriptor
-							= new HashMap<MethodDescriptor, ArrayListMultimap<List<Object>, Event>>();
+	private final Map<MethodDescriptor, ArrayListMultimap<List<Object>, CallOnMock>> eventsByCallByMethodDescriptor
+							= new HashMap<MethodDescriptor, ArrayListMultimap<List<Object>, CallOnMock>>();
 	
 	public EventMap(){
 	}
 	
-	public void put( Event event) {
+	public void put( CallOnMock event) {
 		MethodDescriptor descriptor = event.getDescriptor();
-		ArrayListMultimap<List<Object>, Event> methodByParameters = eventsByCallByMethodDescriptor.get(descriptor);
+		ArrayListMultimap<List<Object>, CallOnMock> methodByParameters = eventsByCallByMethodDescriptor.get(descriptor);
 		if(methodByParameters == null){
 			methodByParameters = ArrayListMultimap.create();
 			eventsByCallByMethodDescriptor.put(descriptor, methodByParameters);
@@ -28,14 +28,14 @@ public class EventMap {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Event> getEvents(MethodDescriptor descriptor, List<Object> parameters) {
-		ArrayListMultimap<List<Object>, Event> params = eventsByCallByMethodDescriptor.get(descriptor);
+	public List<CallOnMock> getEvents(MethodDescriptor descriptor, List<Object> parameters) {
+		ArrayListMultimap<List<Object>, CallOnMock> params = eventsByCallByMethodDescriptor.get(descriptor);
 		return params != null ? params.get(parameters) : Collections.EMPTY_LIST;
 	}
 
 	@SuppressWarnings("unchecked")
 	public Set<List<Object>> getParameters(MethodDescriptor descriptor) {
-		ArrayListMultimap<List<Object>, Event> params = eventsByCallByMethodDescriptor.get(descriptor);
+		ArrayListMultimap<List<Object>, CallOnMock> params = eventsByCallByMethodDescriptor.get(descriptor);
 		return params != null ? params.keySet() : Collections.EMPTY_SET;
 	}
 	

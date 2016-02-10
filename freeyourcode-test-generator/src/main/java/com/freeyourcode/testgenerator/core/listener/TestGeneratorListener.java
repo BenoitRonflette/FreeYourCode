@@ -1,6 +1,6 @@
 package com.freeyourcode.testgenerator.core.listener;
 
-import com.freeyourcode.testgenerator.core.Event;
+import com.freeyourcode.testgenerator.core.CallOnMock;
 import com.freeyourcode.testgenerator.core.MethodParameters;
 
 
@@ -12,11 +12,11 @@ public interface TestGeneratorListener {
 	
 	public void onException(Exception e);
 	
-	public boolean canListenEvent(Event event);
+	public boolean canListenEvent(CallOnMock event);
 	
-	public void onEventStart(Event event);
+	public void onEventStart(CallOnMock event);
 	
-	public void onEventEnd(Event event);
+	public void onEventEnd(CallOnMock event);
 
 	void onSpy(Class<?> cls);
 

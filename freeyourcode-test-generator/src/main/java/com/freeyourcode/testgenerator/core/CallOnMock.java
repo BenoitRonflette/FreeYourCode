@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.freeyourcode.prettyjson.JsonSerialisationUtils;
 
 
-public class Event {
+public class CallOnMock {
 	
 	private final MethodDescriptor descriptor;
 	private final MethodParameters parameters;
@@ -14,7 +14,7 @@ public class Event {
 	private Exception exception;
 	private final Class<?> returnedClass;
 	
-	public Event(MethodDescriptor descriptor, Object[] parameters, Class<?> returnedClass) {
+	public CallOnMock(MethodDescriptor descriptor, Object[] parameters, Class<?> returnedClass) {
 		this.descriptor = descriptor;
 		this.parameters = new MethodParameters(parameters);
 		this.returnedClass = returnedClass;
@@ -24,7 +24,7 @@ public class Event {
 		return response;
 	}
 
-	public Event setResponse(Object response)  {
+	public CallOnMock setResponse(Object response)  {
 		this.response = response;
 		return this;
 	}
@@ -43,7 +43,7 @@ public class Event {
 		return exception;
 	}
 
-	public Event setException(Exception exception) {
+	public CallOnMock setException(Exception exception) {
 		this.exception = exception;
 		return this;
 	}

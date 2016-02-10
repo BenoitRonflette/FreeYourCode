@@ -12,7 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.freeyourcode.prettyjson.JsonSerialisationUtils;
-import com.freeyourcode.testgenerator.core.Event;
+import com.freeyourcode.testgenerator.core.CallOnMock;
 import com.freeyourcode.testgenerator.core.EventMap;
 import com.freeyourcode.testgenerator.core.ListenerManagerConfig;
 import com.freeyourcode.testgenerator.core.MethodDescriptor;
@@ -40,7 +40,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 	
 	private final TestGeneratorLogger logger;
 	//TODO encapsuler la gestion du pendind/events
-	protected Event pendingEvent;
+	protected CallOnMock pendingEvent;
 	protected final EventMap events = new EventMap();
 	private final MethodDescriptor methodDescriptor;
 	private final boolean testMockitoEq;
@@ -65,13 +65,29 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 				.valueOf(firstLetter).toLowerCase());
 	}
 
-	private void writeParamsAsObjectArray(String varName, MethodParameters parameters, boolean onEnter) throws IOException{
+	private void writeParamsAsObjectArray(String varName, MethodParameters parameters, String[] inputParams) throws IOException{
 		if (parameters.getInputParams() != null && parameters.getInputParams().size() > 0) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Object[] ").append(varName).append(" = ").append(onEnter ? parameters.getSerializedParamsAsObjectArrayOnEnter():
-				parameters.getSerializedParamsAsObjectArrayOnExit()).append(";");
+			sb.append("Object[] ").append(varName).append(" = ").append(writeAsObjectArray(inputParams)).append(";");
 			testCodeLines.add(sb.toString());
 		}
+	}
+	
+	private static String writeAsObjectArray(String[] inputParams) throws IOException{
+		if (inputParams != null && inputParams.length > 0) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("new Object[]{");
+			
+			for (int i = 0; i < inputParams.length; i++) {
+				if (i > 0) {
+					sb.append(", ");
+				}
+				sb.append(inputParams[i]);
+			}
+			sb.append("}");
+			return sb.toString();
+		}
+		return null;
 	}
 	
 	private static String buildCallMethod(String methodName, String[] parameters){
@@ -102,7 +118,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		//FIXME le faire plus tôt
 		try {
 			this.inputParameters.freezeExit();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.onGenerationFail(e.getMessage(), e);
 		}
 		writeTest("@Test", outputValue, false);
@@ -160,9 +176,9 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 			logger.onDeclaratedField(testedClassName+" "+testedClassVarName, "@InjectMocks");
 		}
 
-		writeParamsAsObjectArray(INPUT_PARAM_VAR_NAME+SUFFIX_ENTER, inputParameters, true);
+		writeParamsAsObjectArray(INPUT_PARAM_VAR_NAME+SUFFIX_ENTER, inputParameters,inputParameters.getFrozenParametersOnEnter());
 		if(!exception){
-			writeParamsAsObjectArray(INPUT_PARAM_VAR_NAME+SUFFIX_EXIT, inputParameters, false);
+			writeParamsAsObjectArray(INPUT_PARAM_VAR_NAME+SUFFIX_EXIT, inputParameters, inputParameters.getFrozenParametersOnExit());
 		}
 
 		StringBuilder callSvcMethodBuilder = new StringBuilder();
@@ -266,12 +282,12 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 					int callNumberForThisMethod = 0;
 					
 					//TODO refac
-					List<Event> allEvents = new ArrayList<Event>();
+					List<CallOnMock> allEvents = new ArrayList<CallOnMock>();
 					
 					for(List<Object> parameters : events.getParameters(descriptor)){
 						
 						//Get events before calling prepareObjectsForCast
-						List<Event> eventsForThisMethodWithTheseParameters = events.getEvents(descriptor, parameters);
+						List<CallOnMock> eventsForThisMethodWithTheseParameters = events.getEvents(descriptor, parameters);
 						
 						parameters = prepareObjectsForCast(parameters);
 						sigResolver.addCall(parameters);
@@ -281,7 +297,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 						if(testMockitoEq){
 							String methodVarName = descriptor.getName()+SUFFIX_ENTER+methodInputNumber++;
 							//FIXME indexé par MethodParameters pr un truc plus propre (mais étudier le hashcode et equals avant).
-							writeParamsAsObjectArray(methodVarName, eventsForThisMethodWithTheseParameters.get(0).getParameters(), true);
+							writeParamsAsObjectArray(methodVarName, eventsForThisMethodWithTheseParameters.get(0).getParameters(),  eventsForThisMethodWithTheseParameters.get(0).getParameters().getFrozenParametersOnEnter());
 							//Signature is partially resolved but it's enough to use it here.
 							String[] params = generateParamsFromArray(sigResolver, methodVarName,true);
 							generateStubs(callVar, descriptor, eventsForThisMethodWithTheseParameters, params);
@@ -316,14 +332,14 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		return verifyCalledEvent;
 	}
 	
-	protected void generateStubs(String mockedClassObject, MethodDescriptor eventMethod, List<Event> eventsOnThisMethod, String[] params) throws IOException{
+	protected void generateStubs(String mockedClassObject, MethodDescriptor eventMethod, List<CallOnMock> eventsOnThisMethod, String[] params) throws IOException{
 		List<String> methodInputsOnExitVars = new ArrayList<String>();
 		if(params.length > 0 ){
-			for(Event event : eventsOnThisMethod){
+			for(CallOnMock event : eventsOnThisMethod){
 				if(event.getException() == null){
 					String methodInputsOnExitVar = eventMethod.getName()+SUFFIX_EXIT+methodInputNumber++;
 					methodInputsOnExitVars.add(methodInputsOnExitVar);
-					writeParamsAsObjectArray(methodInputsOnExitVar, event.getParameters(), false);
+					writeParamsAsObjectArray(methodInputsOnExitVar, event.getParameters(), event.getParameters().getFrozenParameterDifferencesOnExit());
 				}
 			}
 		}
@@ -342,7 +358,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 			sb.append(".when(").append(mockedClassObject).append(methodWithParams).append(")");
 		}
 		
-		for(Event event : eventsOnThisMethod){
+		for(CallOnMock event : eventsOnThisMethod){
 			if(eventMethod.isVoid()){
 				if(event.getException() != null){
 					sb.append(".doThrow((Throwable)").append(JsonSerialisationUtils.writeObject(event.getException())).append(")");
@@ -448,7 +464,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 	}
 	
 	@Override
-	public void onEventStart(Event event) {
+	public void onEventStart(CallOnMock event) {
 			pendingEvent = event;
 			try {
 				pendingEvent.getParameters().freezeEnter();
@@ -458,20 +474,20 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 	}
 
 	@Override
-	public void onEventEnd(Event event) {
+	public void onEventEnd(CallOnMock event) {
 		//We are mono threaded, if this listener is alive, it would receive at least a start before.
 		try {
 			events.put(pendingEvent);
 			pendingEvent = null;
 			event.freezeResponse();
-			event.getParameters().freezeExit();
-		} catch (IOException e) {
+			event.getParameters().freezeDiffsExit();
+		} catch (Exception e) {
 			logger.onGenerationFail("The event params and response cannot be frozen on exit because "+e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public boolean canListenEvent(Event event) {
+	public boolean canListenEvent(CallOnMock event) {
 		//We support mono threaded application only. So an event is a stub. If the method which generates this event
 		//will carry on other events, we ignore them ! 
 		return pendingEvent == null || pendingEvent.equals(event);
