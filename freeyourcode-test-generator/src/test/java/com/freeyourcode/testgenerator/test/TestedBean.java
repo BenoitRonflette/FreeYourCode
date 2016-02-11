@@ -7,31 +7,31 @@ import java.util.Set;
 public class TestedBean implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private String libelle;
-	
+
 	private int value;
-	
+
 	private Integer valueObject;
-	
+
 	private TestedSubBean subBean;
-	
+
 	private List<Object> list;
-	
+
 	private Set<Object> set;
-	
+
 	public TestedBean() {
 	}
-	
+
 	public TestedBean(String libelle, int value, Integer valueObject) {
 		this(libelle, value, valueObject, null);
 	}
-	
-	public TestedBean(String libelle, int value, Integer valueObject,TestedSubBean subBean) {
+
+	public TestedBean(String libelle, int value, Integer valueObject, TestedSubBean subBean) {
 		this(libelle, value, valueObject, subBean, null);
 	}
-	
-	public TestedBean(String libelle, int value, Integer valueObject,TestedSubBean subBean, Set<Object> set) {
+
+	public TestedBean(String libelle, int value, Integer valueObject, TestedSubBean subBean, Set<Object> set) {
 		super();
 		this.libelle = libelle;
 		this.value = value;
@@ -39,8 +39,6 @@ public class TestedBean implements Serializable {
 		this.subBean = subBean;
 		this.set = set;
 	}
-	
-	
 
 	public int getValue() {
 		return value;
@@ -48,6 +46,46 @@ public class TestedBean implements Serializable {
 
 	public void setValue(int value) {
 		this.value = value;
+	}
+
+	public String getLibelle() {
+		return libelle;
+	}
+
+	public void setLibelle(String libelle) {
+		this.libelle = libelle;
+	}
+
+	public Integer getValueObject() {
+		return valueObject;
+	}
+
+	public void setValueObject(Integer valueObject) {
+		this.valueObject = valueObject;
+	}
+
+	public TestedSubBean getSubBean() {
+		return subBean;
+	}
+
+	public void setSubBean(TestedSubBean subBean) {
+		this.subBean = subBean;
+	}
+
+	public List<Object> getList() {
+		return list;
+	}
+
+	public void setList(List<Object> list) {
+		this.list = list;
+	}
+
+	public Set<Object> getSet() {
+		return set;
+	}
+
+	public void setSet(Set<Object> set) {
+		this.set = set;
 	}
 
 	@Override
@@ -58,8 +96,7 @@ public class TestedBean implements Serializable {
 		result = prime * result + ((list == null) ? 0 : list.hashCode());
 		result = prime * result + ((subBean == null) ? 0 : subBean.hashCode());
 		result = prime * result + value;
-		result = prime * result
-				+ ((valueObject == null) ? 0 : valueObject.hashCode());
+		result = prime * result + ((valueObject == null) ? 0 : valueObject.hashCode());
 		return result;
 	}
 
@@ -96,7 +133,5 @@ public class TestedBean implements Serializable {
 			return false;
 		return true;
 	}
-	
-	
 
 }

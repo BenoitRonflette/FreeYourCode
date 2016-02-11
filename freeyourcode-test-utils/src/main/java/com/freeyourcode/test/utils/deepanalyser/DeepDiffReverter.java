@@ -79,7 +79,7 @@ public final class DeepDiffReverter extends DeepAnalyser {
 	}
 
 	private Object revertDiffBranchInit(Tree tree, Object o) throws Exception {
-		if (diffsToBeApplied == null && diffsToBeApplied.size() == 0) {
+		if (diffsToBeApplied == null || diffsToBeApplied.size() == 0) {
 			return o;
 		}
 

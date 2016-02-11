@@ -30,54 +30,52 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 	private static final String INPUT_PARAM_VAR_NAME = "inputParams";
 	private static final String SUFFIX_ENTER = "_enter";
 	private static final String SUFFIX_EXIT = "_exit";
-	
-	
-	private static final String EVENT_RESPONSE_VAR_NAME="response";
-	
+	private static final String SUFFIX_DIFFS_ON_EXIT = "_diffsOnExit";
+
+	private static final String EVENT_RESPONSE_VAR_NAME = "response";
+
 	private static final String EMPTY_LINE = "";
 
 	private final int methodId;
-	
+
 	private final TestGeneratorLogger logger;
-	//TODO encapsuler la gestion du pendind/events
+	// TODO encapsuler la gestion du pendind/events
 	protected CallOnMock pendingEvent;
 	protected final EventMap events = new EventMap();
 	private final MethodDescriptor methodDescriptor;
 	private final boolean testMockitoEq;
 	int methodInputNumber = 0;
 	int methodResponseNumber = 0;
-	
+
 	final LinkedList<String> testCodeLines = new LinkedList<String>();
 	private MethodParameters inputParameters;
-	
-	
+
 	public DefaultTestGeneratorListener(int id, MethodDescriptor methodDescriptor, ListenerManagerConfig config) {
-		log.info("FreeYourCode Test Generator: new listener on "+methodDescriptor);
+		log.info("FreeYourCode Test Generator: new listener on " + methodDescriptor);
 		this.methodId = id;
 		this.logger = config.getLogger();
 		this.methodDescriptor = methodDescriptor;
 		testMockitoEq = Boolean.parseBoolean(config.getProps().getProperty(TestGeneratorProperties.TEST_EQUALITY_ON_STUBBING, "true"));
 	}
-	
+
 	private static String toLowerFirstLetter(String anyString) {
 		char firstLetter = anyString.charAt(0);
-		return anyString.replaceFirst(String.valueOf(firstLetter), String
-				.valueOf(firstLetter).toLowerCase());
+		return anyString.replaceFirst(String.valueOf(firstLetter), String.valueOf(firstLetter).toLowerCase());
 	}
 
-	private void writeParamsAsObjectArray(String varName, MethodParameters parameters, String[] inputParams) throws IOException{
+	private void writeParamsAsObjectArray(String varName, MethodParameters parameters, String[] inputParams) throws IOException {
 		if (parameters.getInputParams() != null && parameters.getInputParams().size() > 0) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Object[] ").append(varName).append(" = ").append(writeAsObjectArray(inputParams)).append(";");
 			testCodeLines.add(sb.toString());
 		}
 	}
-	
-	private static String writeAsObjectArray(String[] inputParams) throws IOException{
+
+	private static String writeAsObjectArray(String[] inputParams) throws IOException {
 		if (inputParams != null && inputParams.length > 0) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("new Object[]{");
-			
+
 			for (int i = 0; i < inputParams.length; i++) {
 				if (i > 0) {
 					sb.append(", ");
@@ -89,8 +87,8 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		}
 		return null;
 	}
-	
-	private static String buildCallMethod(String methodName, String[] parameters){
+
+	private static String buildCallMethod(String methodName, String[] parameters) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(".").append(methodName).append("(");
 		for (int i = 0; i < parameters.length; i++) {
@@ -115,7 +113,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 
 	@Override
 	public void onOutput(Object outputValue) {
-		//FIXME le faire plus tôt
+		// FIXME le faire plus tôt
 		try {
 			this.inputParameters.freezeExit();
 		} catch (Exception e) {
@@ -126,98 +124,88 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 
 	@Override
 	public void onException(Exception e) {
-			writeTest("@Test(expectedExceptions = "
-					+ e.getClass().getSimpleName()
-					+ ".class"+(e.getMessage() != null ? ", expectedExceptionsMessageRegExp = \""
-					+ e.getMessage() + "\"" : "") +")", null, true);
+		writeTest("@Test(expectedExceptions = " + e.getClass().getSimpleName() + ".class" + (e.getMessage() != null ? ", expectedExceptionsMessageRegExp = \"" + e.getMessage() + "\"" : "") + ")", null, true);
 	}
 
 	private void assertEquals(String expected, String actual) throws IOException {
-			StringBuilder sb = new StringBuilder();
-			sb.append("assertEquals(")
-					.append(expected)
-					.append(", ").append(actual).append(");");
-			testCodeLines.add(sb.toString());
+		StringBuilder sb = new StringBuilder();
+		sb.append("assertEquals(").append(expected).append(", ").append(actual).append(");");
+		testCodeLines.add(sb.toString());
 	}
 
 	private void openTestMethod(String methodName) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("public void test").append(methodName).append("_")
-				.append(methodId).append("() throws Exception {");
+		sb.append("public void test").append(methodName).append("_").append(methodId).append("() throws Exception {");
 		testCodeLines.add(sb.toString());
 	}
 
 	private void closeAndWriteTestMethod() {
 		testCodeLines.add("}");
-		
-		logger.onGenerationSuccess(testCodeLines
-				.toArray(new String[testCodeLines.size()]));
+
+		logger.onGenerationSuccess(testCodeLines.toArray(new String[testCodeLines.size()]));
 	}
-	
-	private void writeComment(String comment){
-		testCodeLines.add("//"+comment);
+
+	private void writeComment(String comment) {
+		testCodeLines.add("//" + comment);
 	}
-	
-	private void writeTestedMethod(Object outputValue, boolean exception) throws IOException{
+
+	private void writeTestedMethod(Object outputValue, boolean exception) throws IOException {
 		String testedClassName = methodDescriptor.getMethodClass().getSimpleName();
 		logger.onUsedClass(methodDescriptor.getMethodClass(), false);
-	
+
 		writeComment("Call to tested method");
-		
+
 		String testedClassVarName;
-		if(methodDescriptor.isStatic()){
+		if (methodDescriptor.isStatic()) {
 			testedClassVarName = testedClassName;
-			//FIXME si full injection, 
-			//pr permettre l'injection de fields static que cette méthode pourrait utiliser.
-			//logger.onDeclaratedField(testedClassName+" "+testedClassVarName, "@InjectMocks"); 
-		}
-		else{
+			// FIXME si full injection,
+			// pr permettre l'injection de fields static que cette méthode pourrait utiliser.
+			// logger.onDeclaratedField(testedClassName+" "+testedClassVarName, "@InjectMocks");
+		} else {
 			testedClassVarName = toLowerFirstLetter(testedClassName);
-			logger.onDeclaratedField(testedClassName+" "+testedClassVarName, "@InjectMocks");
+			logger.onDeclaratedField(testedClassName + " " + testedClassVarName, "@InjectMocks");
 		}
 
-		writeParamsAsObjectArray(INPUT_PARAM_VAR_NAME+SUFFIX_ENTER, inputParameters,inputParameters.getFrozenParametersOnEnter());
-		if(!exception){
-			writeParamsAsObjectArray(INPUT_PARAM_VAR_NAME+SUFFIX_EXIT, inputParameters, inputParameters.getFrozenParametersOnExit());
+		writeParamsAsObjectArray(INPUT_PARAM_VAR_NAME + SUFFIX_ENTER, inputParameters, JsonSerialisationUtils.writeSerializedObjectsInJava(inputParameters.getFrozenParametersOnEnter()));
+		if (!exception) {
+			writeParamsAsObjectArray(INPUT_PARAM_VAR_NAME + SUFFIX_EXIT, inputParameters, JsonSerialisationUtils.writeSerializedObjectsInJava(inputParameters.getFrozenParametersOnExit()));
 		}
 
 		StringBuilder callSvcMethodBuilder = new StringBuilder();
 		if (!methodDescriptor.isVoid() && !exception) {
-			callSvcMethodBuilder.append("Object ")
-					.append(TESTED_METHOD_RESULT_NAME).append(" = ");
+			callSvcMethodBuilder.append("Object ").append(TESTED_METHOD_RESULT_NAME).append(" = ");
 		}
 
 		SignatureResolver sigResolver = new SignatureResolver(methodDescriptor);
 		sigResolver.addCall(prepareObjectsForCast(inputParameters.getInputParams()));
-		String[] params = generateParamsFromArray(sigResolver, INPUT_PARAM_VAR_NAME+SUFFIX_ENTER, false);
-		callSvcMethodBuilder.append(testedClassVarName).append(buildCallMethod(methodDescriptor.getName(), params))
-		.append(";");
+		String[] params = generateParamsFromArray(sigResolver, INPUT_PARAM_VAR_NAME + SUFFIX_ENTER, false);
+		callSvcMethodBuilder.append(testedClassVarName).append(buildCallMethod(methodDescriptor.getName(), params)).append(";");
 		testCodeLines.add(callSvcMethodBuilder.toString());
-		
+
 		if (!methodDescriptor.isVoid() && !exception) {
-			assertEquals(JsonSerialisationUtils.writeObject(outputValue), TESTED_METHOD_RESULT_NAME);
+			assertEquals(JsonSerialisationUtils.writeObjectInJava(outputValue), TESTED_METHOD_RESULT_NAME);
 		}
-		
-		if(inputParameters.getInputParams() != null && inputParameters.getInputParams().size() > 0 && !exception){
-			assertEquals(INPUT_PARAM_VAR_NAME+SUFFIX_EXIT, INPUT_PARAM_VAR_NAME+SUFFIX_ENTER);
+
+		if (inputParameters.getInputParams() != null && inputParameters.getInputParams().size() > 0 && !exception) {
+			assertEquals(INPUT_PARAM_VAR_NAME + SUFFIX_EXIT, INPUT_PARAM_VAR_NAME + SUFFIX_ENTER);
 		}
 	}
-	
-	private void writeStubVerifications(List<String> stubVerifications){
-		if(stubVerifications.size() > 0){
+
+	private void writeStubVerifications(List<String> stubVerifications) {
+		if (stubVerifications.size() > 0) {
 			testCodeLines.add(EMPTY_LINE);
 			writeComment("Check the number of calls to stub methods");
 			testCodeLines.addAll(stubVerifications);
 		}
 	}
-	
+
 	private void writeTest(String annotation, Object outputValue, boolean exception) {
 		try {
 			testCodeLines.add(annotation);
 			openTestMethod(methodDescriptor.getName());
 			List<String> verifyCalledEvent = writeStubs();
 			writeTestedMethod(outputValue, exception);
-			if(!exception){
+			if (!exception) {
 				writeStubVerifications(verifyCalledEvent);
 			}
 			closeAndWriteTestMethod();
@@ -225,273 +213,256 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 			logger.onGenerationFail(ex.getMessage(), ex);
 		}
 	}
-	
-	protected String declareClassIsStubbed(Class<?> cls){
+
+	protected String declareClassIsStubbed(Class<?> cls) {
 		logger.onUsedClass(cls, true);
-		//We create a mocked object for this output event:
-		String mockedClassAsVar =  toLowerFirstLetter(cls.getSimpleName())+"Stub";
-		logger.onDeclaratedField(cls.getSimpleName()+" "+mockedClassAsVar, "@Mock");
+		// We create a mocked object for this output event:
+		String mockedClassAsVar = toLowerFirstLetter(cls.getSimpleName()) + "Stub";
+		logger.onDeclaratedField(cls.getSimpleName() + " " + mockedClassAsVar, "@Mock");
 		return mockedClassAsVar;
 	}
-	
-	protected List<Object> prepareObjectsForCast(List<Object> params){
-		for(int i =0;i<params.size();i++){
+
+	protected List<Object> prepareObjectsForCast(List<Object> params) {
+		for (int i = 0; i < params.size(); i++) {
 			params.set(i, prepareObjectForCast(params.get(i)));
 		}
 		return params;
 	}
-	
-	//TODO renommer les deux methodes et permettre de préparer les objets de manière plus générale !!
-	protected Object prepareObjectForCast(Object o){
+
+	// TODO renommer les deux methodes et permettre de préparer les objets de manière plus générale !!
+	protected Object prepareObjectForCast(Object o) {
 		return o;
 	}
-	
-	private List<String> writeStubs() throws Exception{
+
+	private List<String> writeStubs() throws Exception {
 		List<String> verifyCalledEvent = new ArrayList<String>();
-		//TODO refac en petites methodes
-	
+		// TODO refac en petites methodes
+
 		Set<MethodDescriptor> descriptors = events.getMethodDescriptors();
-		if(descriptors.size() > 0){
+		if (descriptors.size() > 0) {
 			writeComment("Mock the stub methods");
 			StringBuilder sb = new StringBuilder();
-			//TODO refac
-				Set<Class<?>> classesWithStaticMock = new HashSet<Class<?>>();
-				for(MethodDescriptor descriptor : descriptors){
-					if(descriptor.isStatic()){
-						classesWithStaticMock.add(descriptor.getMethodClass());
-					}
+			// TODO refac
+			Set<Class<?>> classesWithStaticMock = new HashSet<Class<?>>();
+			for (MethodDescriptor descriptor : descriptors) {
+				if (descriptor.isStatic()) {
+					classesWithStaticMock.add(descriptor.getMethodClass());
 				}
-				
-				//TODO refac car trop de code
-				for(Class<?> classWithStaticMock : classesWithStaticMock){
-					logger.onUsedClass(classWithStaticMock, false);
-					testCodeLines.add("PowerMockito.mockStatic("+classWithStaticMock.getSimpleName()+".class);");
-				}
-			
-				for(MethodDescriptor descriptor : descriptors){
-					//FIXME si mock static, y a t'il besoin de déclarer la var ?! uniquement si full injection ??
-					String mockedClassAsVar = declareClassIsStubbed(descriptor.getMethodClass());
-					
-					String callVar = descriptor.isStatic() ? descriptor.getMethodClass().getSimpleName() : mockedClassAsVar;
-					
-					//We have to resolve the signature. We haven't used javassist $sig because sometimes, with generic, we ignore
-					//the real parameter types when the class is modified by javassist. So we have to deduce the real signature 
-					//ourselves.
-					SignatureResolver sigResolver = new SignatureResolver(descriptor);
-					
-					int callNumberForThisMethod = 0;
-					
-					//TODO refac
-					List<CallOnMock> allEvents = new ArrayList<CallOnMock>();
-					
-					for(List<Object> parameters : events.getParameters(descriptor)){
-						
-						//Get events before calling prepareObjectsForCast
-						List<CallOnMock> eventsForThisMethodWithTheseParameters = events.getEvents(descriptor, parameters);
-						
-						parameters = prepareObjectsForCast(parameters);
-						sigResolver.addCall(parameters);
-						
-						callNumberForThisMethod += eventsForThisMethodWithTheseParameters.size();
-						
-						if(testMockitoEq){
-							String methodVarName = descriptor.getName()+SUFFIX_ENTER+methodInputNumber++;
-							//FIXME indexé par MethodParameters pr un truc plus propre (mais étudier le hashcode et equals avant).
-							writeParamsAsObjectArray(methodVarName, eventsForThisMethodWithTheseParameters.get(0).getParameters(),  eventsForThisMethodWithTheseParameters.get(0).getParameters().getFrozenParametersOnEnter());
-							//Signature is partially resolved but it's enough to use it here.
-							String[] params = generateParamsFromArray(sigResolver, methodVarName,true);
-							generateStubs(callVar, descriptor, eventsForThisMethodWithTheseParameters, params);
-						}
-						else{
-							allEvents.addAll(eventsForThisMethodWithTheseParameters);
-						}
-					}
-					
-					if(!testMockitoEq){
-						generateStubs(callVar, descriptor, allEvents, generateParamsMockitoAny(sigResolver));
-					}
-					
-					
-					//Check the call number on this method
-					sb.setLength(0);
-					
-					String call = buildCallMethod(descriptor.getName(), generateParamsMockitoAny(sigResolver));
-					if(descriptor.isStatic()){
-						verifyCalledEvent.add("PowerMockito.verifyStatic(Mockito.times("+callNumberForThisMethod+"));");
-						sb.append(descriptor.getMethodClass().getSimpleName()).append(call).append(";");
-					}
-					else{
-						sb.append("Mockito.verify(").append(callVar).append(", Mockito.times(")
-						.append(callNumberForThisMethod).append("))").append(call).append(";");
-					}
+			}
 
-					verifyCalledEvent.add(sb.toString());
+			// TODO refac car trop de code
+			for (Class<?> classWithStaticMock : classesWithStaticMock) {
+				logger.onUsedClass(classWithStaticMock, false);
+				testCodeLines.add("PowerMockito.mockStatic(" + classWithStaticMock.getSimpleName() + ".class);");
+			}
+
+			for (MethodDescriptor descriptor : descriptors) {
+				// FIXME si mock static, y a t'il besoin de déclarer la var ?! uniquement si full injection ??
+				String mockedClassAsVar = declareClassIsStubbed(descriptor.getMethodClass());
+
+				String callVar = descriptor.isStatic() ? descriptor.getMethodClass().getSimpleName() : mockedClassAsVar;
+
+				// We have to resolve the signature. We haven't used javassist $sig because sometimes, with generic, we ignore
+				// the real parameter types when the class is modified by javassist. So we have to deduce the real signature
+				// ourselves.
+				SignatureResolver sigResolver = new SignatureResolver(descriptor);
+
+				int callNumberForThisMethod = 0;
+
+				// TODO refac
+				List<CallOnMock> allEvents = new ArrayList<CallOnMock>();
+
+				for (List<Object> parameters : events.getParameters(descriptor)) {
+
+					// Get events before calling prepareObjectsForCast
+					List<CallOnMock> eventsForThisMethodWithTheseParameters = events.getEvents(descriptor, parameters);
+
+					parameters = prepareObjectsForCast(parameters);
+					sigResolver.addCall(parameters);
+
+					callNumberForThisMethod += eventsForThisMethodWithTheseParameters.size();
+
+					if (testMockitoEq) {
+						String methodVarName = descriptor.getName() + SUFFIX_ENTER + "_" + methodInputNumber++;
+						// FIXME indexé par MethodParameters pr un truc plus propre (mais étudier le hashcode et equals avant).
+						writeParamsAsObjectArray(methodVarName, eventsForThisMethodWithTheseParameters.get(0).getParameters(),
+								JsonSerialisationUtils.writeSerializedObjectsInJava(eventsForThisMethodWithTheseParameters.get(0).getParameters().getFrozenParametersOnEnter()));
+						// Signature is partially resolved but it's enough to use it here.
+						String[] params = generateParamsFromArray(sigResolver, methodVarName, true);
+						generateStubs(callVar, descriptor, eventsForThisMethodWithTheseParameters, params);
+					} else {
+						allEvents.addAll(eventsForThisMethodWithTheseParameters);
+					}
 				}
+
+				if (!testMockitoEq) {
+					generateStubs(callVar, descriptor, allEvents, generateParamsMockitoAny(sigResolver));
+				}
+
+				// Check the call number on this method
+				sb.setLength(0);
+
+				String call = buildCallMethod(descriptor.getName(), generateParamsMockitoAny(sigResolver));
+				if (descriptor.isStatic()) {
+					verifyCalledEvent.add("PowerMockito.verifyStatic(Mockito.times(" + callNumberForThisMethod + "));");
+					sb.append(descriptor.getMethodClass().getSimpleName()).append(call).append(";");
+				} else {
+					sb.append("Mockito.verify(").append(callVar).append(", Mockito.times(").append(callNumberForThisMethod).append("))").append(call).append(";");
+				}
+
+				verifyCalledEvent.add(sb.toString());
+			}
 			testCodeLines.add(EMPTY_LINE);
 		}
 		return verifyCalledEvent;
 	}
-	
-	protected void generateStubs(String mockedClassObject, MethodDescriptor eventMethod, List<CallOnMock> eventsOnThisMethod, String[] params) throws IOException{
+
+	protected void generateStubs(String mockedClassObject, MethodDescriptor eventMethod, List<CallOnMock> eventsOnThisMethod, String[] params) throws IOException {
 		List<String> methodInputsOnExitVars = new ArrayList<String>();
-		if(params.length > 0 ){
-			for(CallOnMock event : eventsOnThisMethod){
-				if(event.getException() == null){
-					String methodInputsOnExitVar = eventMethod.getName()+SUFFIX_EXIT+methodInputNumber++;
+		if (params.length > 0) {
+			for (CallOnMock event : eventsOnThisMethod) {
+				if (event.getException() == null) {
+					String methodInputsOnExitVar = eventMethod.getName() + SUFFIX_DIFFS_ON_EXIT + "_" + methodInputNumber++;
 					methodInputsOnExitVars.add(methodInputsOnExitVar);
-					writeParamsAsObjectArray(methodInputsOnExitVar, event.getParameters(), event.getParameters().getFrozenParameterDifferencesOnExit());
+					writeParamsAsObjectArray(methodInputsOnExitVar, event.getParameters(), JsonSerialisationUtils.writeSerializedObjectsInJava(event.getParameters().getFrozenParameterDifferencesOnExit()));
 				}
 			}
 		}
 		Iterator<String> methodInputsOnExitVarsIt = methodInputsOnExitVars.iterator();
-		
-		//TODO refac
+
+		// TODO refac
 		String methodWithParams = buildCallMethod(eventMethod.getName(), params);
-		
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("Mockito");
-		
-		if(!eventMethod.isVoid()){
-			//No void method example:
-			//Mockito.when(objectMocked.equals(Mockito.eq(params[0]))).thenThrow((Throwable)null).thenReturn(returnedObject1).thenReturn(returnedObject2);
+
+		if (!eventMethod.isVoid()) {
+			// No void method example:
+			// Mockito.when(objectMocked.equals(Mockito.eq(params[0]))).thenThrow((Throwable)null).thenReturn(returnedObject1).thenReturn(returnedObject2);
 			sb.append(".when(").append(mockedClassObject).append(methodWithParams).append(")");
 		}
-		
-		for(CallOnMock event : eventsOnThisMethod){
-			if(eventMethod.isVoid()){
-				if(event.getException() != null){
-					sb.append(".doThrow((Throwable)").append(JsonSerialisationUtils.writeObject(event.getException())).append(")");
+
+		for (CallOnMock event : eventsOnThisMethod) {
+			if (eventMethod.isVoid()) {
+				if (event.getException() != null) {
+					sb.append(".doThrow((Throwable)").append(JsonSerialisationUtils.writeObjectInJava(event.getException())).append(")");
+				} else {
+					// TODO pas très propre si prob avec le next !
+					sb.append(params.length > 0 ? ".doAnswer(exitAnswer(" + methodInputsOnExitVarsIt.next() + "))" : ".doNothing()");
 				}
-				else{
-					//TODO pas très propre si prob avec le next !
-					sb.append(params.length > 0 ? ".doAnswer(exitAnswer("+methodInputsOnExitVarsIt.next()+"))" : ".doNothing()");
+			} else {
+				if (event.getException() != null) {
+					sb.append(".thenThrow((Throwable)").append(JsonSerialisationUtils.writeObjectInJava(event.getException())).append(")");
+				} else {
+					String responseVarName = EVENT_RESPONSE_VAR_NAME + methodResponseNumber++;
+					testCodeLines.add("Object " + responseVarName + " = " + event.getSerializedResponse() + ";");
+
+					if (params.length > 0) {
+						// TODO pas très propre si prob avec le next !
+						sb.append(".then(exitAnswer(").append(methodInputsOnExitVarsIt.next()).append(", ").append(responseVarName).append("))");
+					} else {
+						// FIXME browse all returned type with the same resolver to improve the result (and reduce the number of null call).
+						ClassResolver classResolver = new ClassResolver(event.getReturnedClass());
+						classResolver.addCall(prepareObjectForCast(event.getResponse()));// TODO voir pr supprimer le getResponse()
+						sb.append(".thenReturn(").append(cast(classResolver.resolve(true), responseVarName)).append(")"); // FIXME
+					}
 				}
 			}
-			else{
-				if(event.getException() != null){
-					sb.append(".thenThrow((Throwable)").append(JsonSerialisationUtils.writeObject(event.getException())).append(")");
-				}
-				else{
-					String responseVarName = EVENT_RESPONSE_VAR_NAME+methodResponseNumber++;
-					testCodeLines.add("Object "+responseVarName + " = "+event.getSerializedResponse()+";");
-
-
-					if(params.length > 0){
-						//TODO pas très propre si prob avec le next !
-						sb.append(".then(exitAnswer(").append(methodInputsOnExitVarsIt.next()).append(", ").append(responseVarName).append("))"); 
-					}
-					else{
-						//FIXME browse all returned type with the same resolver to improve the result (and reduce the number of null call).
-						ClassResolver classResolver = new ClassResolver(event.getReturnedClass());
-						classResolver.addCall(prepareObjectForCast(event.getResponse()));//TODO voir pr supprimer le getResponse()
-						sb.append(".thenReturn(").append(cast(classResolver.resolve(true), responseVarName)).append(")"); //FIXME
-					}
-				}
-			}	
 		}
-		
-		if(eventMethod.isVoid()){
-			//Void Method example
-			//Mockito.doThrow((Throwable)null).doNothing().when(objectMocked).equals(Mockito.eq(params[0]));
+
+		if (eventMethod.isVoid()) {
+			// Void Method example
+			// Mockito.doThrow((Throwable)null).doNothing().when(objectMocked).equals(Mockito.eq(params[0]));
 			sb.append(".when(").append(mockedClassObject).append(")").append(methodWithParams).append(";");
-		}
-		else{
+		} else {
 			sb.append(";");
 		}
 
 		testCodeLines.add(sb.toString());
 	}
-	
-	private String[] generateParamsFromArray(SignatureResolver sigResolver, String objectArrayVarName, boolean testMockitoEq){
+
+	private String[] generateParamsFromArray(SignatureResolver sigResolver, String objectArrayVarName, boolean testMockitoEq) {
 		List<Class<?>> paramClasses = sigResolver.resolve(true);
 		String[] parameters = new String[paramClasses.size()];
 		for (int i = 0; i < paramClasses.size(); i++) {
-				String param = cast(paramClasses.get(i), objectArrayVarName+"["+i+"]");
-				if(testMockitoEq){
-					param = "Mockito.eq("+param+")";
-				}
-				parameters[i] = param;
+			String param = cast(paramClasses.get(i), objectArrayVarName + "[" + i + "]");
+			if (testMockitoEq) {
+				param = "Mockito.eq(" + param + ")";
 			}
+			parameters[i] = param;
+		}
 		return parameters;
 	}
-	
-	private String[] generateParamsMockitoAny(SignatureResolver sigResolver){
-		//Don't wrap primitives classes else Mockito.any() will throw a NPE.
+
+	private String[] generateParamsMockitoAny(SignatureResolver sigResolver) {
+		// Don't wrap primitives classes else Mockito.any() will throw a NPE.
 		List<Class<?>> paramClasses = sigResolver.resolve(false);
 		String[] any = new String[paramClasses.size()];
-		for(int i = 0; i < paramClasses.size(); i++){
+		for (int i = 0; i < paramClasses.size(); i++) {
 			Class<?> paramClass = paramClasses.get(i);
-			if(paramClass == boolean.class){
+			if (paramClass == boolean.class) {
 				any[i] = "Mockito.anyBoolean()";
-			}
-			else if(paramClass == byte.class){
+			} else if (paramClass == byte.class) {
 				any[i] = "Mockito.anyByte()";
-			}
-			else if(paramClass == char.class){
+			} else if (paramClass == char.class) {
 				any[i] = "Mockito.anyChar()";
-			}
-			else if(paramClass == double.class){
+			} else if (paramClass == double.class) {
 				any[i] = "Mockito.anyDouble()";
-			}
-			else if(paramClass == float.class){
+			} else if (paramClass == float.class) {
 				any[i] = "Mockito.anyFloat()";
-			}
-			else if(paramClass == int.class){
+			} else if (paramClass == int.class) {
 				any[i] = "Mockito.anyInt()";
-			}
-			else if(paramClass == short.class){
+			} else if (paramClass == short.class) {
 				any[i] = "Mockito.anyShort()";
-			}
-			else{
+			} else {
 				any[i] = cast(paramClass, "Mockito.any()");
 			}
 		}
 		return any;
 	}
-	
-	private String cast(Class<?> cls, String var){
+
+	private String cast(Class<?> cls, String var) {
 		logger.onUsedClass(cls, true);
-		return "("+cls.getSimpleName()+")"+var;
+		return "(" + cls.getSimpleName() + ")" + var;
 	}
-	
+
 	@Override
-	public void onSpy(Class<?> cls){
+	public void onSpy(Class<?> cls) {
 		String spiedClassName = cls.getSimpleName();
 		logger.onUsedClass(cls, true);
 		String spiedClassVarName = toLowerFirstLetter(spiedClassName);
-		logger.onDeclaratedField(spiedClassName+" "+spiedClassVarName, "@InjectMocks", "@Spy");
+		logger.onDeclaratedField(spiedClassName + " " + spiedClassVarName, "@InjectMocks", "@Spy");
 	}
-	
+
 	@Override
 	public void onEventStart(CallOnMock event) {
-			pendingEvent = event;
-			try {
-				pendingEvent.getParameters().freezeEnter();
-			} catch (IOException e) {
-				logger.onGenerationFail("The event params cannot be frozen on entering because "+e.getMessage(), e);
-			}
+		pendingEvent = event;
+		try {
+			pendingEvent.getParameters().freezeEnter();
+		} catch (IOException e) {
+			logger.onGenerationFail("The event params cannot be frozen on entering because " + e.getMessage(), e);
+		}
 	}
 
 	@Override
 	public void onEventEnd(CallOnMock event) {
-		//We are mono threaded, if this listener is alive, it would receive at least a start before.
+		// We are mono threaded, if this listener is alive, it would receive at least a start before.
 		try {
 			events.put(pendingEvent);
 			pendingEvent = null;
 			event.freezeResponse();
 			event.getParameters().freezeDiffsExit();
 		} catch (Exception e) {
-			logger.onGenerationFail("The event params and response cannot be frozen on exit because "+e.getMessage(), e);
+			logger.onGenerationFail("The event params and response cannot be frozen on exit because " + e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public boolean canListenEvent(CallOnMock event) {
-		//We support mono threaded application only. So an event is a stub. If the method which generates this event
-		//will carry on other events, we ignore them ! 
+		// We support mono threaded application only. So an event is a stub. If the method which generates this event
+		// will carry on other events, we ignore them !
 		return pendingEvent == null || pendingEvent.equals(event);
-		//else: other events between the current started one and its future end.
+		// else: other events between the current started one and its future end.
 	}
-	
+
 }

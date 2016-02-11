@@ -31,7 +31,7 @@ public class CallOnMock {
 	
 	public void freezeResponse() throws IOException{
 		if(response != null && serializedResponse == null){
-			serializedResponse = JsonSerialisationUtils.writeObject(response);
+			serializedResponse = JsonSerialisationUtils.writeObjectInJava(response);
 		}
 	}
 

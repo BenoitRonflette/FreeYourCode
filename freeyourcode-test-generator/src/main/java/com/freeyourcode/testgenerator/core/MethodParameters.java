@@ -47,35 +47,25 @@ public class MethodParameters {
 			List<Map<String, Object>> differencesWithEnter = new ArrayList<Map<String, Object>>();
 			for (int i = 0; i < frozenParametersOnEnter.length; i++) {
 				// Modified values are updated on exit when test will be executed.
-				differencesWithEnter.add(DeepDiff.diff(JsonSerialisationUtils.deserialize(frozenParametersOnEnter[i]), inputParams.get(i)).getDiffsAsMap());
+				DeepDiff diffs = DeepDiff.diff(JsonSerialisationUtils.deserialize(frozenParametersOnEnter[i]), inputParams.get(i));
+				differencesWithEnter.add(diffs.getDiffs().size() > 0 ? diffs.getDiffsAsMap() : null);
 			}
-			frozenParameterDifferencesOnExit = asSerializedObjectArray(differencesWithEnter);
+			frozenParameterDifferencesOnExit = JsonSerialisationUtils.serializeList(differencesWithEnter);
 		}
 	}
 
 	public void freezeExit() throws IOException {
 		// Several listeners can ask for a frozen event, we freeze it only once!
 		if (frozenParametersOnExit == null) {
-			frozenParametersOnExit = asSerializedObjectArray(this.inputParams);
+			frozenParametersOnExit = JsonSerialisationUtils.serializeList(this.inputParams);
 		}
 	}
 
 	public void freezeEnter() throws IOException {
 		// Several listeners can ask for a frozen event, we freeze it only once!
 		if (frozenParametersOnEnter == null) {
-			frozenParametersOnEnter = asSerializedObjectArray(this.inputParams);
+			frozenParametersOnEnter = JsonSerialisationUtils.serializeList(this.inputParams);
 		}
-	}
-
-	private static String[] asSerializedObjectArray(List<?> inputParams) throws IOException {
-		if (inputParams != null && inputParams.size() > 0) {
-			String[] serializedObjects = new String[inputParams.size()];
-			for (int i = 0; i < inputParams.size(); i++) {
-				serializedObjects[i] = JsonSerialisationUtils.writeObject(inputParams.get(i));
-			}
-			return serializedObjects;
-		}
-		return new String[] {};
 	}
 
 	public String[] getFrozenParametersOnEnter() {
