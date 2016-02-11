@@ -2,6 +2,7 @@
 <agent port="8097" autoStart="true">
 	<logger class="com.freeyourcode.testgenerator.test.agent.MockTestLogger" file="./src/test/java/com/freeyourcode/testgenerator/test/agent/generated/GeneratedByAgentTestMockPluginWithInjectionTest.java"  package="com.freeyourcode.testgenerator.test.agent.generated"></logger>
 	<plugins>
+	<!-- com.freeyourcode.testgenerator.agent.plugins.HibernateCompatibilityPlugin permits to test the MockOnCall freezes on response/exit which are performed after clonning the objects (but deep finding is performed beforecloning !!) -->
 		<plugin
 			class="com.freeyourcode.testgenerator.agent.plugins.HibernateCompatibilityPlugin"></plugin>
 		<plugin class="com.freeyourcode.testgenerator.agent.plugins.TestGeneratorPlugin">

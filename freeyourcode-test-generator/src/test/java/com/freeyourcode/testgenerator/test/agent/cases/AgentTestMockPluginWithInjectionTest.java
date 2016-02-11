@@ -31,8 +31,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 
 	@BeforeClass
 	public void lancementAgent() {
-		lancementAgent(AgentProperties.CONFIG_FILE_PATH
-				+ "=./src/test/java/agentTestMockPluginConfigWithInjection.xml");
+		lancementAgent(AgentProperties.CONFIG_FILE_PATH + "=./src/test/java/agentTestMockPluginConfigWithInjection.xml");
 	}
 
 	@BeforeMethod
@@ -55,8 +54,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 	public void testMyMethodNoParamNoResult() throws Exception {
 
 		invokeMethod("myMethodNoParamNoResult");
-		assertTestIs("@Test"
-				+ "public void testmyMethodNoParamNoResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Mockito.doNothing().when(testedClassStub).myMethodNoParamNoResult();" + "" + "//Call to tested method"
+		assertTestIs("@Test" + "public void testmyMethodNoParamNoResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Mockito.doNothing().when(testedClassStub).myMethodNoParamNoResult();" + "" + "//Call to tested method"
 				+ "classCallingTestedClassWithFieldInjection.myMethodNoParamNoResult();" + "" + "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodNoParamNoResult();" + "}");
 
 	}
@@ -65,8 +63,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 	public void testMyMethodNoParamResult() throws Exception {
 
 		invokeMethod("myMethodNoParamResult");
-		assertTestIs("@Test"
-				+ "public void testmyMethodNoParamResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":2.0}\");"
+		assertTestIs("@Test" + "public void testmyMethodNoParamResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":2.0}\");"
 				+ "Mockito.when(testedClassStub.myMethodNoParamResult()).thenReturn((Double)response0);" + "" + "//Call to tested method" + "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethodNoParamResult();"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":2.0}\"), testedMethodResult);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodNoParamResult();" + "}");
@@ -76,9 +73,9 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 	public void testMyMethodNoParamResultPrimitif() throws Exception {
 
 		invokeMethod("myMethodNoParamResultPrimitif");
-		assertTestIs("@Test"
-				+ "public void testmyMethodNoParamResultPrimitif_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":2.0}\");"
-				+ "Mockito.when(testedClassStub.myMethodNoParamResultPrimitif()).thenReturn((Double)response0);" + "" + "//Call to tested method" + "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethodNoParamResultPrimitif();"
+		assertTestIs("@Test" + "public void testmyMethodNoParamResultPrimitif_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
+				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":2.0}\");" + "Mockito.when(testedClassStub.myMethodNoParamResultPrimitif()).thenReturn((Double)response0);" + ""
+				+ "//Call to tested method" + "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethodNoParamResultPrimitif();"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":2.0}\"), testedMethodResult);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodNoParamResultPrimitif();" + "}");
 	}
@@ -87,8 +84,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 	public void testMyMethod1ParamNoResult() throws Exception {
 
 		invokeMethod("myMethod1ParamNoResult", 17.14);
-		assertTestIs("@Test"
-				+ "public void testmyMethod1ParamNoResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
+		assertTestIs("@Test" + "public void testmyMethod1ParamNoResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
 				+ "Object[] myMethod1ParamNoResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":17.14}\")};" + "Object[] myMethod1ParamNoResult_diffsOnExit_1 = new Object[]{null};"
 				+ "Mockito.doAnswer(exitAnswer(myMethod1ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod1ParamNoResult(Mockito.eq((Double)myMethod1ParamNoResult_enter_0[0]));" + "" + "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":17.14}\")};"
@@ -100,8 +96,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 	public void testMyMethod1ParamNoResult_ParamDefaultValue() throws Exception {
 
 		invokeMethod("myMethod1ParamNoResult", new Object[] { null });
-		assertTestIs("@Test"
-				+ "public void testmyMethod1ParamNoResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Object[] myMethod1ParamNoResult_enter_0 = new Object[]{null};"
+		assertTestIs("@Test" + "public void testmyMethod1ParamNoResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Object[] myMethod1ParamNoResult_enter_0 = new Object[]{null};"
 				+ "Object[] myMethod1ParamNoResult_diffsOnExit_1 = new Object[]{null};"
 				+ "Mockito.doAnswer(exitAnswer(myMethod1ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod1ParamNoResult(Mockito.eq((Double)myMethod1ParamNoResult_enter_0[0]));" + "" + "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{null};" + "Object[] inputParams_exit = new Object[]{null};" + "classCallingTestedClassWithFieldInjection.myMethod1ParamNoResult((Double)inputParams_enter[0]);"
@@ -112,8 +107,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 	public void testMyMethod1ParamResult() throws Exception {
 
 		invokeMethod("myMethod1ParamResult", 9d);
-		assertTestIs("@Test"
-				+ "public void testmyMethod1ParamResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
+		assertTestIs("@Test" + "public void testmyMethod1ParamResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
 				+ "Object[] myMethod1ParamResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":9.0}\")};" + "Object[] myMethod1ParamResult_diffsOnExit_1 = new Object[]{null};"
 				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":18.0}\");"
 				+ "Mockito.when(testedClassStub.myMethod1ParamResult(Mockito.eq((Double)myMethod1ParamResult_enter_0[0]))).then(exitAnswer(myMethod1ParamResult_diffsOnExit_1, response0));" + "" + "//Call to tested method"
@@ -148,8 +142,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 	public void testMyMethod1ParamPrimitifResultPrimitif() throws Exception {
 
 		invokeMethod("myMethod1ParamPrimitifResultPrimitif", 4.0003);
-		assertTestIs("@Test"
-				+ "public void testmyMethod1ParamPrimitifResultPrimitif_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
+		assertTestIs("@Test" + "public void testmyMethod1ParamPrimitifResultPrimitif_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
 				+ "Object[] myMethod1ParamPrimitifResultPrimitif_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":4.0003}\")};"
 				+ "Object[] myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1 = new Object[]{null};" + "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0006}\");"
 				+ "Mockito.when(testedClassStub.myMethod1ParamPrimitifResultPrimitif(Mockito.eq((Double)myMethod1ParamPrimitifResultPrimitif_enter_0[0]))).then(exitAnswer(myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1, response0));" + ""
@@ -164,8 +157,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 	public void testMyMethod1ParamPrimitifResultPrimitif_defaultPrimitiveValue_defaultResultValue() throws Exception {
 
 		invokeMethod("myMethod1ParamPrimitifResultPrimitif", 0.0);
-		assertTestIs("@Test"
-				+ "public void testmyMethod1ParamPrimitifResultPrimitif_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
+		assertTestIs("@Test" + "public void testmyMethod1ParamPrimitifResultPrimitif_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
 				+ "Object[] myMethod1ParamPrimitifResultPrimitif_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\"}\")};" + "Object[] myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1 = new Object[]{null};"
 				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\"}\");"
 				+ "Mockito.when(testedClassStub.myMethod1ParamPrimitifResultPrimitif(Mockito.eq((Double)myMethod1ParamPrimitifResultPrimitif_enter_0[0]))).then(exitAnswer(myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1, response0));" + ""
@@ -260,8 +252,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 	public void testMyMethod2ParamNoResultWithParamNull() throws Exception {
 
 		invokeMethod("myMethod2ParamNoResult", 8d, null);
-		assertTestIs("@Test"
-				+ "public void testmyMethod2ParamNoResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
+		assertTestIs("@Test" + "public void testmyMethod2ParamNoResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
 				+ "Object[] myMethod2ParamNoResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), null};" + "Object[] myMethod2ParamNoResult_diffsOnExit_1 = new Object[]{null, null};"
 				+ "Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(Mockito.eq((Double)myMethod2ParamNoResult_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamNoResult_enter_0[1]));" + ""
 				+ "//Call to tested method" + "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), null};"
@@ -371,8 +362,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 	@Test
 	public void testCallToStaticMethod() throws Exception {
 		invokeMethod("myStaticMethod", 45.2d);
-		assertTestIs("@Test"
-				+ "public void testmyStaticMethod_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "PowerMockito.mockStatic(TestedClass.class);"
+		assertTestIs("@Test" + "public void testmyStaticMethod_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "PowerMockito.mockStatic(TestedClass.class);"
 				+ "Object[] myStaticMethod_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\")};" + "Object[] myStaticMethod_diffsOnExit_1 = new Object[]{null};"
 				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":135.60000000000002}\");"
 				+ "Mockito.when(TestedClass.myStaticMethod(Mockito.eq((Double)myStaticMethod_enter_0[0]))).then(exitAnswer(myStaticMethod_diffsOnExit_1, response0));" +
@@ -397,20 +387,20 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 				+ "//Mock the stub methods"
 				+ "Object[] myMethodIsModifyingInput_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
 				+ "Object[] myMethodIsModifyingInput_diffsOnExit_1 = new Object[]{null, JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"java.util.HashMap\\\",\\\"libelle\\\":\\\"NewLibelle\\\",\\\"subBean.value2\\\":\\\"NewValueOnSubBean\\\"}\")};"
-				+ "Object response0 = JsonSerialisationUtils.deserialize(\"\\\"NewValueOnSubBean\\\"\");"
+				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.test.utils.InputPointerResolver\\\",\\\"pathToInput\\\":\\\"1.subBean.value2\\\"}\");"
 				+ "Mockito.when(testedClassStub.myMethodIsModifyingInput(Mockito.eq((Double)myMethodIsModifyingInput_enter_0[0]), Mockito.eq((TestedBean)myMethodIsModifyingInput_enter_0[1]))).then(exitAnswer(myMethodIsModifyingInput_diffsOnExit_1, response0));"
 				+ ""
 				+ "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"NewLibelle\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"NewValueOnSubBean\\\"}}\")};"
 				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.getModifiedValue2FromMyMethodIsModifyingInput((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
-				+ "assertEquals(JsonSerialisationUtils.deserialize(\"\\\"NewValueOnSubBean\\\"\"), testedMethodResult);" 
-				+ "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
+				+ "assertEquals(JsonSerialisationUtils.deserialize(\"\\\"NewValueOnSubBean\\\"\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodIsModifyingInput(Mockito.anyDouble(), (TestedBean)Mockito.any());" + "}");
 	}
 
 	@Test
 	public void testMyMethodIsReturningSubBean() throws Exception {
+		// com.freeyourcode.testgenerator.agent.plugins.HibernateCompatibilityPlugin permits to test the MockOnCall freezes on response/exit which are performed after clonning the objects (but deep finding is performed beforecloning !!)
 		TestedBean bean = new TestedBean("l1", 1, 2, new TestedSubBean("v2"));
 		invokeMethod("myMethodIsReturningSubBean", 8d, bean);
 		assertTestIs("@Test"
@@ -420,7 +410,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 				+ "//Mock the stub methods"
 				+ "Object[] myMethodIsReturningSubBean_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
 				+ "Object[] myMethodIsReturningSubBean_diffsOnExit_1 = new Object[]{null, null};"
-				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedSubBean\\\",\\\"value2\\\":\\\"v2\\\"}\");"
+				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.test.utils.InputPointerResolver\\\",\\\"pathToInput\\\":\\\"1.subBean\\\"}\");"
 				+ "Mockito.when(testedClassStub.myMethodIsReturningSubBean(Mockito.eq((Double)myMethodIsReturningSubBean_enter_0[0]), Mockito.eq((TestedBean)myMethodIsReturningSubBean_enter_0[1]))).then(exitAnswer(myMethodIsReturningSubBean_diffsOnExit_1, response0));"
 				+ ""
 				+ "//Call to tested method"
@@ -442,7 +432,7 @@ public class AgentTestMockPluginWithInjectionTest extends AgentOneTestedClassTes
 				+ "//Mock the stub methods"
 				+ "Object[] myMethodIsReturningSubBeanValue_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
 				+ "Object[] myMethodIsReturningSubBeanValue_diffsOnExit_1 = new Object[]{null, null};"
-				+ "Object response0 = JsonSerialisationUtils.deserialize(\"\\\"v2\\\"\");"
+				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.test.utils.InputPointerResolver\\\",\\\"pathToInput\\\":\\\"1.subBean.value2\\\"}\");"
 				+ "Mockito.when(testedClassStub.myMethodIsReturningSubBeanValue(Mockito.eq((Double)myMethodIsReturningSubBeanValue_enter_0[0]), Mockito.eq((TestedBean)myMethodIsReturningSubBeanValue_enter_0[1]))).then(exitAnswer(myMethodIsReturningSubBeanValue_diffsOnExit_1, response0));"
 				+ ""
 				+ "//Call to tested method"

@@ -214,6 +214,40 @@ public class DeepTest {
 		Assert.assertEquals(null, DeepFinder.find(searchedObject, null));
 	}
 
+	@Test
+	public void testDeepResolver_inSubObject() throws Exception {
+		SubExampleObject searchedObject = new SubExampleObject("Hello", null);
+
+		List<SubExampleObject> listOnExit = new ArrayList<SubExampleObject>();
+		SubExampleObject subOOnlyOnExit1 = new SubExampleObject("Hello1", searchedObject);
+		listOnExit.add(subOOnlyOnExit1);
+		SubExampleObject subOOnlyOnExit2 = new SubExampleObject("HelloOnExit", null);
+		listOnExit.add(subOOnlyOnExit2);
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		ExampleObject input = new ExampleObject("myString2", 1, null, new Date(new Date().getTime() * 2), listOnExit, new int[] { 78, 9 }, null, map);
+
+		String path = DeepFinder.find(searchedObject, input);
+		Assert.assertEquals("list.0.value", path);
+
+		Assert.assertTrue(DeepResolver.resolve(path, input) == searchedObject);
+	}
+
+	@Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = "Cannot resolve a null path")
+	public void testDeepResolver_nullPath() throws Exception {
+		DeepResolver.resolve(null, new Object());
+	}
+
+	@Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = "Cannot resolve path ")
+	public void testDeepResolver_nullObject() throws Exception {
+		DeepResolver.resolve("", null);
+	}
+
+	@Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = "Cannot resolve path value")
+	public void testDeepResolver_notFound() throws Exception {
+		DeepResolver.resolve("value", new Object());
+	}
+
 	public static class ExampleObject {
 		String string;
 		int i;

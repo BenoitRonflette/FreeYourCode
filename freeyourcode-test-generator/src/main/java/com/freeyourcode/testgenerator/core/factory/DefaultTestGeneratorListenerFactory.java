@@ -5,8 +5,7 @@ import com.freeyourcode.testgenerator.core.MethodDescriptor;
 import com.freeyourcode.testgenerator.core.listener.DefaultTestGeneratorListener;
 import com.freeyourcode.testgenerator.core.listener.TestGeneratorListener;
 
-public class DefaultTestGeneratorListenerFactory implements
-		TestGeneratorListenerFactory {
+public class DefaultTestGeneratorListenerFactory implements TestGeneratorListenerFactory {
 
 	@Override
 	public TestGeneratorListener create(int testId, MethodDescriptor descriptor, ListenerManagerConfig config) {
