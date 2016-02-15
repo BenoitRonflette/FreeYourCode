@@ -78,6 +78,10 @@ public class DeepFinder extends DeepAnalyser {
 
 	private <T> String findInBranchCollection(Tree tree, Object searchedObject, Collection<T> c) throws Exception {
 		if (shouldVisit(c)) {
+			if (isNonDeterministCollection(c.getClass())) {
+				c = determine(c);
+			}
+
 			int position = 0;
 			Iterator<?> it = c.iterator();
 			while (it.hasNext()) {

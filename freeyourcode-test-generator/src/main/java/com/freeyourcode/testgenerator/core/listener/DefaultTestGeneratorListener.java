@@ -55,7 +55,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		this.methodId = id;
 		this.logger = config.getLogger();
 		this.methodDescriptor = methodDescriptor;
-		testMockitoEq = Boolean.parseBoolean(config.getProps().getProperty(TestGeneratorProperties.TEST_EQUALITY_ON_STUBBING, "false"));
+		testMockitoEq = Boolean.parseBoolean(config.getProps().getProperty(TestGeneratorProperties.TEST_EQUALITY_ON_STUBBING, "true"));
 	}
 
 	private static String toLowerFirstLetter(String anyString) {

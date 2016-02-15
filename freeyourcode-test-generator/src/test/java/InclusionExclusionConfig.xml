@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<agent port="8101" autoStart="true" testEqualityOnStubbing="true">
+<agent port="8101" autoStart="true">
 	<logger class="com.freeyourcode.testgenerator.test.agent.MockTestLogger"  file="./src/test/java/com/freeyourcode/testgenerator/test/agent/generated/GeneratedByInclusionExclusionTest.java" package="com.freeyourcode.testgenerator.test.agent.generated" />
 	<plugins>
 		<plugin class="com.freeyourcode.testgenerator.agent.plugins.TestGeneratorPlugin">

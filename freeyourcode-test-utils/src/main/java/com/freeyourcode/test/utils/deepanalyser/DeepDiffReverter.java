@@ -139,6 +139,10 @@ public final class DeepDiffReverter extends DeepAnalyser {
 	@SuppressWarnings("unchecked")
 	private <T> void revertDiffBranchCollection(Tree tree, Collection<T> c) throws Exception {
 		if (shouldVisit(c)) {
+			if (isNonDeterministCollection(c.getClass())) {
+				c = determine(c);
+			}
+
 			int position = 0;
 			if (shouldCollectionBeReorganized(tree)) {
 				List<T> collecCopy = Lists.newArrayList(c);

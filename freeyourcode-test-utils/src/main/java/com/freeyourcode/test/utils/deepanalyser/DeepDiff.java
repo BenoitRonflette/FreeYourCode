@@ -7,11 +7,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 
 import com.google.common.primitives.Primitives;
 
@@ -41,7 +39,7 @@ public class DeepDiff extends DeepAnalyser {
 		diffs.add(new Diff(tree.toString(), o1, o2));
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected DeepDiff diffBranch(Tree tree, Object o1, Object o2) throws Exception {
 		if (o1 == null) {
 			if (o2 != null) {
@@ -95,44 +93,11 @@ public class DeepDiff extends DeepAnalyser {
 		}
 	}
 
-	private boolean isNonDeterministCollection(Class<?> c) {
-		return !List.class.isAssignableFrom(c) && !SortedSet.class.isAssignableFrom(c) && !LinkedHashSet.class.isAssignableFrom(c);
-	}
-
-	// FIXME améliorer le traitement de l'indéterminisme des collections et le faire pr les maps
-	// private boolean isNonDeterministMap(Class<?> c) {
-	// return !SortedMap.class.isAssignableFrom(c) && !LinkedHashMap.class.isAssignableFrom(c);
-	// }
-
 	private <T> void diffBranchCollection(Tree tree, Collection<T> c1, Collection<T> c2) throws Exception {
 		if (shouldVisit(c1)) {
-			if (c1.size() == c2.size() && (isNonDeterministCollection(c1.getClass()) || isNonDeterministCollection(c2.getClass()))) {
-				List<T> availableC2Values = new ArrayList<T>(c2);
-				List<T> deterministC1 = new ArrayList<T>(c1);
-				List<T> deterministC2 = new ArrayList<T>(c2.size());
-				List<Integer> notFoundValues = new ArrayList<Integer>();
-
-				for (int i = 0; i < deterministC1.size(); i++) {
-					boolean found = false;
-					for (int j = 0; j < availableC2Values.size(); j++) {
-						if (deterministC1.get(i).equals(availableC2Values.get(j))) {
-							found = true;
-							deterministC2.add(availableC2Values.remove(j));
-							break;
-						}
-					}
-
-					if (!found) {
-						deterministC2.add(null);
-						notFoundValues.add(i);
-					}
-				}
-
-				for (int i = 0; i < notFoundValues.size(); i++) {
-					deterministC2.set(notFoundValues.get(i), availableC2Values.get(i));
-				}
-				c1 = deterministC1;
-				c2 = deterministC2;
+			if (isNonDeterministCollection(c1.getClass()) || isNonDeterministCollection(c2.getClass())) {
+				c1 = determine(c1);
+				c2 = determine(c2);
 			}
 
 			int position = 0;

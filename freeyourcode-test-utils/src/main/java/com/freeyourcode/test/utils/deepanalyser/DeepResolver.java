@@ -83,6 +83,10 @@ public final class DeepResolver extends DeepAnalyser {
 
 	private <T> Object resolveInBranchCollection(Tree tree, String path, Collection<T> c) throws Exception {
 		if (shouldVisit(c)) {
+			if (isNonDeterministCollection(c.getClass())) {
+				c = determine(c);
+			}
+
 			int position = 0;
 			Iterator<?> it = c.iterator();
 			while (it.hasNext()) {
