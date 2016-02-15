@@ -8,20 +8,20 @@ import java.util.Map;
 
 import com.google.common.primitives.Primitives;
 
-public final class DeepFinder extends DeepAnalyser {
+public class DeepFinder extends DeepAnalyser {
 
-	private DeepFinder() {
+	public DeepFinder() {
 	}
 
 	private boolean isFound(Object searchedObject, Object o) {
 		return searchedObject == o;
 	}
 
-	private String findInBranchInit(Tree tree, Object searchedObject, Object o) throws Exception {
+	public String find(Object searchedObject, Object o) throws Exception {
 		if (searchedObject == null) {
 			return null;
 		}
-		return findInBranch(tree, searchedObject, o);
+		return findInBranch(new Tree(), searchedObject, o);
 	}
 
 	private String findInBranch(Tree tree, Object searchedObject, Object o) throws Exception {
@@ -117,10 +117,6 @@ public final class DeepFinder extends DeepAnalyser {
 			}
 		}
 		return null;
-	}
-
-	public static String find(Object searchedObject, Object browsedObject) throws Exception {
-		return new DeepFinder().findInBranchInit(new Tree(), searchedObject, browsedObject);
 	}
 
 }

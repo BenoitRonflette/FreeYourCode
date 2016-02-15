@@ -15,8 +15,7 @@ public final class DeepDiffReverter extends DeepAnalyser {
 
 	private Map<String, Object> diffsToBeApplied;
 
-	private DeepDiffReverter(Map<String, Object> diffsToBeApplied) {
-		this.diffsToBeApplied = diffsToBeApplied;
+	public DeepDiffReverter() {
 	}
 
 	private boolean shouldCollectionBeReorganized(Tree tree) {
@@ -78,7 +77,9 @@ public final class DeepDiffReverter extends DeepAnalyser {
 		return diffsToBeApplied.remove(key);
 	}
 
-	private Object revertDiffBranchInit(Tree tree, Object o) throws Exception {
+	private Object revertDiffBranchInit(Tree tree, Map<String, Object> diffsToBeApplied, Object o) throws Exception {
+		this.diffsToBeApplied = diffsToBeApplied;
+
 		if (diffsToBeApplied == null || diffsToBeApplied.size() == 0) {
 			return o;
 		}
@@ -203,8 +204,8 @@ public final class DeepDiffReverter extends DeepAnalyser {
 		}
 	}
 
-	public static Object revertDiffs(Object object, Map<String, Object> diffsToBeApplied) throws Exception {
-		return new DeepDiffReverter(diffsToBeApplied).revertDiffBranchInit(new Tree(), object);
+	public Object revertDiffs(Object object, Map<String, Object> diffsToBeApplied) throws Exception {
+		return revertDiffBranchInit(new Tree(), diffsToBeApplied, object);
 	}
 
 }

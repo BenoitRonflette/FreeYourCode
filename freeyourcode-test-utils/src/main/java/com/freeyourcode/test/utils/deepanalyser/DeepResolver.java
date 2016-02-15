@@ -9,20 +9,20 @@ import java.util.Map;
 import com.google.common.primitives.Primitives;
 
 public final class DeepResolver extends DeepAnalyser {
-	// TODO merge with resolveer
+	// TODO merge with finder
 
-	private DeepResolver() {
+	public DeepResolver() {
 	}
 
 	private boolean isResolve(Tree tree, String path) {
 		return tree.toString().equals(path);
 	}
 
-	private Object resolveInBranchInit(Tree tree, String path, Object o) throws Exception {
+	public Object resolve(String path, Object o) throws Exception {
 		if (path == null) {
 			throw new Exception("Cannot resolve a null path");
 		}
-		Object resolved = resolveInBranch(tree, path, o);
+		Object resolved = resolveInBranch(new Tree(), path, o);
 		if (resolved == null) {
 			throw new Exception("Cannot resolve path " + path);
 		}
@@ -122,10 +122,6 @@ public final class DeepResolver extends DeepAnalyser {
 			}
 		}
 		return null;
-	}
-
-	public static Object resolve(String path, Object object) throws Exception {
-		return new DeepResolver().resolveInBranchInit(new Tree(), path, object);
 	}
 
 }

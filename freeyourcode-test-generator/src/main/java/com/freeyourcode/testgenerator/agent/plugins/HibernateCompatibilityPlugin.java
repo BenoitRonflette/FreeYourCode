@@ -3,7 +3,7 @@ package com.freeyourcode.testgenerator.agent.plugins;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +16,10 @@ import org.w3c.dom.Element;
 
 import com.cedarsoftware.util.io.JsonObjectFilter;
 import com.cedarsoftware.util.io.JsonWriter;
+import com.freeyourcode.prettyjson.JsonSerialisationUtils;
+import com.freeyourcode.test.utils.InputPointerResolver;
+import com.freeyourcode.test.utils.deepanalyser.DeepDiff;
+import com.freeyourcode.test.utils.deepanalyser.DeepFinder;
 import com.freeyourcode.testgenerator.core.CallOnMock;
 import com.freeyourcode.testgenerator.core.ListenerManager;
 import com.freeyourcode.testgenerator.core.ListenerManagerConfig;
@@ -99,15 +103,19 @@ public class HibernateCompatibilityPlugin implements Plugin {
 						// implementations on stub method exit.
 						events.put(pendingEvent);
 						pendingEvent = null;
-						// FIXME if several listeners listen the same event, don't clone plusieurs fois!!!
 
-						try {
-							event.findResponsePointer();
-							event.getParameters().setInputParams(getCloner().deepClone(event.getParameters().getInputParams()));
-							event.setResponse(getCloner().deepClone(event.getResponse()));
-						} catch (Throwable t) {
-							t.printStackTrace();
-							log.error("onEventEnd cloning error : " + t.getMessage());
+						HibernateCallOnMock hEvent = (HibernateCallOnMock) event;
+						if (!hEvent.isAlreadyCloned) {
+							try {
+								hEvent.freezeFindResponseInParams();
+								hEvent.getParameters().setInputParams(getCloner().deepClone(event.getParameters().getInputParams()));
+								hEvent.setResponse(getCloner().deepClone(event.getResponse()));
+							} catch (Throwable t) {
+								t.printStackTrace();
+								log.error("onEventEnd cloning error : " + t.getMessage());
+							}
+							// If several listeners listen the same event, we don't have to clone params everytime !
+							hEvent.isAlreadyCloned = true;
 						}
 					}
 
@@ -117,9 +125,8 @@ public class HibernateCompatibilityPlugin implements Plugin {
 							try {
 								// FIXME le faire sur l'enter et autres ?!
 								event.freezeResponse();
-								event.getParameters().freezeDiffsExit();
+								event.freezeDiffsExit();
 							} catch (Throwable e) {
-								// FIXME
 								logger.onGenerationFail("The event params and response cannot be frozen on exit because " + e.getMessage(), new Exception(e));
 							}
 						}
@@ -127,6 +134,11 @@ public class HibernateCompatibilityPlugin implements Plugin {
 					}
 
 				};
+			}
+
+			@Override
+			public CallOnMock createAssociatedCallOnMock(MethodDescriptor descriptor, Object[] parameters, Class<?> returnedClass) {
+				return new HibernateCallOnMock(descriptor, parameters, returnedClass);
 			}
 
 		});
@@ -228,7 +240,56 @@ public class HibernateCompatibilityPlugin implements Plugin {
 	}
 
 	private static <T> Set<T> unproxyPersistentSet(Map<T, ?> persistenceSet) {
-		return new LinkedHashSet<T>(persistenceSet.keySet());
+		return new HashSet<T>(persistenceSet.keySet());
+	}
+
+	private class HibernateCallOnMock extends CallOnMock {
+
+		private String pathToInputRef;
+		private boolean isAlreadyCloned;
+
+		public HibernateCallOnMock(MethodDescriptor descriptor, Object[] parameters, Class<?> returnedClass) {
+			super(descriptor, parameters, returnedClass);
+		}
+
+		public void freezeFindResponseInParams() throws Exception {
+			pathToInputRef = findResponseInParams();
+		}
+
+		@Override
+		public void freezeResponse() throws Exception {
+			if (shouldSerializedResponse()) {
+				serializedResponse = JsonSerialisationUtils.writeObjectInJava(pathToInputRef != null ? new InputPointerResolver(pathToInputRef) : response);
+			}
+		}
+
+		@Override
+		protected DeepDiff createDeepDiff() {
+			return new DeepDiff() {
+
+				@Override
+				public DeepDiff diff(Object expected, Object actual) throws Exception {
+					// Expected is the serialized input object when code was entering in the method to get the initial object values.
+					// To make a right comparison, we have compare to deserialized object to compare both objects without proxies
+					// and WITH initialized fields by the constructors !
+					actual = JsonSerialisationUtils.deserialize(JsonSerialisationUtils.serialize(actual));
+					return super.diff(expected, actual);
+				}
+
+			};
+		}
+
+		@Override
+		protected DeepFinder createDeepFinder() {
+			return new DeepFinder() {
+				@Override
+				protected boolean shouldVisit(Object o) {
+					// Don't visit all database !!
+					return isHibernateInitialized(o) && super.shouldVisit(o);
+				}
+			};
+		}
+
 	}
 
 }

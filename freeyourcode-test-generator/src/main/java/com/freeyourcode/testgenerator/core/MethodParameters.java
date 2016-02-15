@@ -1,12 +1,9 @@
 package com.freeyourcode.testgenerator.core;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.freeyourcode.prettyjson.JsonSerialisationUtils;
-import com.freeyourcode.test.utils.deepanalyser.DeepDiff;
 import com.google.common.collect.Lists;
 
 /**
@@ -26,8 +23,6 @@ public class MethodParameters {
 	private String[] frozenParametersOnEnter;
 	// We serialize input parameters on output to compare the final main test method result.
 	private String[] frozenParametersOnExit;
-	// We serialize differences between the parameters values on enter and on exit because parameters could be modified during method execution.
-	private String[] frozenParameterDifferencesOnExit;
 
 	public MethodParameters(Object[] inputParams) {
 		this.inputParams = Lists.newArrayList(inputParams);
@@ -39,19 +34,6 @@ public class MethodParameters {
 
 	public void setInputParams(List<Object> inputParams) {
 		this.inputParams = inputParams;
-	}
-
-	public void freezeDiffsExit() throws Exception {
-		// Several listeners can ask for a frozen event, we freeze it only once!
-		if (frozenParameterDifferencesOnExit == null) {
-			List<Map<String, Object>> differencesWithEnter = new ArrayList<Map<String, Object>>();
-			for (int i = 0; i < frozenParametersOnEnter.length; i++) {
-				// Modified values are updated on exit when test will be executed.
-				DeepDiff diffs = DeepDiff.diff(JsonSerialisationUtils.deserialize(frozenParametersOnEnter[i]), inputParams.get(i));
-				differencesWithEnter.add(diffs.getDiffs().size() > 0 ? diffs.getDiffsAsMap() : null);
-			}
-			frozenParameterDifferencesOnExit = JsonSerialisationUtils.serializeList(differencesWithEnter);
-		}
 	}
 
 	public void freezeExit() throws IOException {
@@ -74,10 +56,6 @@ public class MethodParameters {
 
 	public String[] getFrozenParametersOnExit() {
 		return frozenParametersOnExit;
-	}
-
-	public String[] getFrozenParameterDifferencesOnExit() {
-		return frozenParameterDifferencesOnExit;
 	}
 
 }

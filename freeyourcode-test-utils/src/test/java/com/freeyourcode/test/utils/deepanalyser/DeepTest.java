@@ -23,7 +23,7 @@ public class DeepTest {
 		ExampleObject input = new ExampleObject("myString", 0, 4, new Date(), list, new int[] { 7, 78, 9 }, new Object[] { subO }, null);
 		ExampleObject input2 = new ExampleObject("myString", 0, 4, new Date(), list, new int[] { 7, 78, 9 }, new Object[] { subO }, null);
 
-		DeepDiff diffs = DeepDiff.diff(input, input2);
+		DeepDiff diffs = new DeepDiff().diff(input, input2);
 
 		Assert.assertEquals(diffs.getDiffs().size(), 0);
 	}
@@ -35,7 +35,7 @@ public class DeepTest {
 		list.add(subO);
 		ExampleObject input = new ExampleObject("myString", 0, 4, new Date(), list, new int[] { 7, 78, 9 }, new Object[] { subO }, null);
 
-		DeepDiff diffs = DeepDiff.diff(input, input);
+		DeepDiff diffs = new DeepDiff().diff(input, input);
 		Assert.assertEquals(diffs.getDiffs().size(), 0);
 	}
 
@@ -47,7 +47,7 @@ public class DeepTest {
 		ExampleObject input = new ExampleObject("myString", 0, 4, new Date(), list, new int[] { 7, 78, 9 }, new Object[] { subO }, null);
 		ExampleObject input2 = new ExampleObject(input.string, input.i, input.iObject, input.date, list, input.iArray, input.oArray, input.map);
 
-		DeepDiff diffs = DeepDiff.diff(input, input2);
+		DeepDiff diffs = new DeepDiff().diff(input, input2);
 		Assert.assertEquals(diffs.getDiffs().size(), 0);
 	}
 
@@ -58,7 +58,7 @@ public class DeepTest {
 		list.add(subO);
 		ExampleObject input = new ExampleObject("myString", 0, 4, new Date(), list, new int[] { 7, 78, 9 }, new Object[] { subO }, null);
 
-		DeepDiff diffs = DeepDiff.diff(input, null);
+		DeepDiff diffs = new DeepDiff().diff(input, null);
 		Assert.assertEquals(diffs.getDiffs().size(), 1);
 		Assert.assertEquals(diffs.getDiffs().get(0).path, "");
 	}
@@ -70,7 +70,7 @@ public class DeepTest {
 		list.add(subO);
 		ExampleObject input = new ExampleObject("myString", 0, 4, new Date(), list, new int[] { 7, 78, 9 }, new Object[] { subO }, null);
 
-		DeepDiff diffs = DeepDiff.diff(null, input);
+		DeepDiff diffs = new DeepDiff().diff(null, input);
 		Assert.assertEquals(diffs.getDiffs().size(), 1);
 		Assert.assertEquals(diffs.getDiffs().get(0).path, "");
 	}
@@ -93,7 +93,7 @@ public class DeepTest {
 		ExampleObject input = new ExampleObject("myString", 0, 4, new Date(), list, new int[] { 7, 78, 9 }, new Object[] { subO }, null);
 		ExampleObject inputOnExit = new ExampleObject("myString2", 1, null, new Date(new Date().getTime() * 2), listOnExit, new int[] { 78, 9 }, null, map);
 
-		DeepDiff diffs = DeepDiff.diff(input, inputOnExit);
+		DeepDiff diffs = new DeepDiff().diff(input, inputOnExit);
 		Assert.assertEquals(diffs.getDiffs().size(), 10);
 
 		System.out.println("=================");
@@ -159,8 +159,8 @@ public class DeepTest {
 		ExampleObject input = new ExampleObject("myString", 0, 4, new Date(), list, new int[] { 7, 78, 9 }, new Object[] { subO }, null);
 		ExampleObject inputOnExit = new ExampleObject("myString2", 1, null, new Date(new Date().getTime() * 2), listOnExit, new int[] { 78, 9 }, null, map);
 
-		Map<String, Object> diffs = DeepDiff.diff(input, inputOnExit).getDiffsAsMap();
-		Object inputModifiedWithInputOnExitDiff = DeepDiffReverter.revertDiffs(input, diffs);
+		Map<String, Object> diffs = new DeepDiff().diff(input, inputOnExit).getDiffsAsMap();
+		Object inputModifiedWithInputOnExitDiff = new DeepDiffReverter().revertDiffs(input, diffs);
 
 		System.out.println(" Initial object: " + input);
 		System.out.println("Compared object: " + inputOnExit);
@@ -177,7 +177,7 @@ public class DeepTest {
 		Assert.assertEquals(inputOnExit, inputModifiedWithInputOnExitDiff);
 
 		// There are no more diffs between the modified initial input and the inputOnExit after applying diffs!
-		Assert.assertEquals(DeepDiff.diff(inputModifiedWithInputOnExitDiff, inputOnExit).getDiffs().size(), 0);
+		Assert.assertEquals(new DeepDiff().diff(inputModifiedWithInputOnExitDiff, inputOnExit).getDiffs().size(), 0);
 	}
 
 	@Test
@@ -193,25 +193,25 @@ public class DeepTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		ExampleObject input = new ExampleObject("myString2", 1, null, new Date(new Date().getTime() * 2), listOnExit, new int[] { 78, 9 }, null, map);
 
-		Assert.assertEquals("list.0.value", DeepFinder.find(searchedObject, input));
+		Assert.assertEquals("list.0.value", new DeepFinder().find(searchedObject, input));
 	}
 
 	@Test
 	public void testDeepFinder_sameObject() throws Exception {
 		SubExampleObject searchedObject = new SubExampleObject("Hello", null);
-		Assert.assertEquals("", DeepFinder.find(searchedObject, searchedObject));
+		Assert.assertEquals("", new DeepFinder().find(searchedObject, searchedObject));
 	}
 
 	@Test
 	public void testDeepFinder_nullSearchedObject() throws Exception {
 		SubExampleObject object = new SubExampleObject("Hello", null);
-		Assert.assertEquals(null, DeepFinder.find(null, object));
+		Assert.assertEquals(null, new DeepFinder().find(null, object));
 	}
 
 	@Test
 	public void testDeepFinder_nullInput() throws Exception {
 		SubExampleObject searchedObject = new SubExampleObject("Hello", null);
-		Assert.assertEquals(null, DeepFinder.find(searchedObject, null));
+		Assert.assertEquals(null, new DeepFinder().find(searchedObject, null));
 	}
 
 	@Test
@@ -227,25 +227,25 @@ public class DeepTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		ExampleObject input = new ExampleObject("myString2", 1, null, new Date(new Date().getTime() * 2), listOnExit, new int[] { 78, 9 }, null, map);
 
-		String path = DeepFinder.find(searchedObject, input);
+		String path = new DeepFinder().find(searchedObject, input);
 		Assert.assertEquals("list.0.value", path);
 
-		Assert.assertTrue(DeepResolver.resolve(path, input) == searchedObject);
+		Assert.assertTrue(new DeepResolver().resolve(path, input) == searchedObject);
 	}
 
 	@Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = "Cannot resolve a null path")
 	public void testDeepResolver_nullPath() throws Exception {
-		DeepResolver.resolve(null, new Object());
+		new DeepResolver().resolve(null, new Object());
 	}
 
 	@Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = "Cannot resolve path ")
 	public void testDeepResolver_nullObject() throws Exception {
-		DeepResolver.resolve("", null);
+		new DeepResolver().resolve("", null);
 	}
 
 	@Test(expectedExceptions = Exception.class, expectedExceptionsMessageRegExp = "Cannot resolve path value")
 	public void testDeepResolver_notFound() throws Exception {
-		DeepResolver.resolve("value", new Object());
+		new DeepResolver().resolve("value", new Object());
 	}
 
 	public static class ExampleObject {

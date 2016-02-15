@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<agent port="8095" autoStart="true">
+<agent port="8095" autoStart="true" testEqualityOnStubbing="true">
 	<logger class="com.freeyourcode.testgenerator.test.agent.MockTestLogger" file="./src/test/java/com/freeyourcode/testgenerator/test/agent/generated/GeneratedByAgentTestSpyPluginTest.java"  package="com.freeyourcode.testgenerator.test.agent.generated"></logger>
 	<plugins>
 		<plugin

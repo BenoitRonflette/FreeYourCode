@@ -42,7 +42,7 @@ public class GeneratedTestCase extends PowerMockTestCase {
 			public T answer(InvocationOnMock invocation) throws Throwable {
 				if (inputDiffsOnExit != null) {
 					for (int i = 0; i < inputDiffsOnExit.length; i++) {
-						DeepDiffReverter.revertDiffs(invocation.getArguments()[i], (Map<String, Object>) inputDiffsOnExit[i]);
+						new DeepDiffReverter().revertDiffs(invocation.getArguments()[i], (Map<String, Object>) inputDiffsOnExit[i]);
 					}
 				}
 

@@ -1,7 +1,9 @@
 package com.freeyourcode.prettyjson;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -10,9 +12,10 @@ import com.cedarsoftware.util.io.JsonWriter;
 
 public final class JsonSerialisationUtils {
 	
+
 	private JsonSerialisationUtils(){
 	}
-	
+
 	public static String writeObjectInJava(Object o) throws IOException{
 		return writeSerializedObjectInJava(serialize(o));
 	}
@@ -63,6 +66,7 @@ public final class JsonSerialisationUtils {
 		}
 		return new String[] {};
 	}
+
 	
 
 }

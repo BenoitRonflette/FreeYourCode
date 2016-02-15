@@ -32,7 +32,7 @@ public class BasicTypeMatcherEquals extends MatcherEquals {
 	@Override
 	public boolean matches(final Object item) {
 		try {
-			differences = DeepDiff.diff(expectedValue, item).prettyDiff();
+			differences = new DeepDiff().diff(expectedValue, item).prettyDiff();
 			return differences.size() == 0;
 		} catch (Exception e) {
 			e.printStackTrace();

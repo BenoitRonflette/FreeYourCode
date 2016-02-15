@@ -55,7 +55,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		this.methodId = id;
 		this.logger = config.getLogger();
 		this.methodDescriptor = methodDescriptor;
-		testMockitoEq = Boolean.parseBoolean(config.getProps().getProperty(TestGeneratorProperties.TEST_EQUALITY_ON_STUBBING, "true"));
+		testMockitoEq = Boolean.parseBoolean(config.getProps().getProperty(TestGeneratorProperties.TEST_EQUALITY_ON_STUBBING, "false"));
 	}
 
 	private static String toLowerFirstLetter(String anyString) {
@@ -324,7 +324,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 				if (event.getException() == null) {
 					String methodInputsOnExitVar = eventMethod.getName() + SUFFIX_DIFFS_ON_EXIT + "_" + methodInputNumber++;
 					methodInputsOnExitVars.add(methodInputsOnExitVar);
-					writeParamsAsObjectArray(methodInputsOnExitVar, event.getParameters(), JsonSerialisationUtils.writeSerializedObjectsInJava(event.getParameters().getFrozenParameterDifferencesOnExit()));
+					writeParamsAsObjectArray(methodInputsOnExitVar, event.getParameters(), JsonSerialisationUtils.writeSerializedObjectsInJava(event.getFrozenParameterDifferencesOnExit()));
 				}
 			}
 		}
@@ -451,7 +451,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 			events.put(pendingEvent);
 			pendingEvent = null;
 			event.freezeResponse();
-			event.getParameters().freezeDiffsExit();
+			event.freezeDiffsExit();
 		} catch (Exception e) {
 			logger.onGenerationFail("The event params and response cannot be frozen on exit because " + e.getMessage(), e);
 		}

@@ -11,7 +11,7 @@ public class InputPointerResolver {
 	}
 
 	public Object resolve(Object params) throws Exception {
-		return DeepResolver.resolve(pathToInput, params);
+		return new DeepResolver().resolve(pathToInput, params);
 	}
 
 }

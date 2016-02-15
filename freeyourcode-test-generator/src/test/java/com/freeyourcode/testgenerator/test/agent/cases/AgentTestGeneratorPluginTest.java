@@ -309,10 +309,10 @@ public class AgentTestGeneratorPluginTest extends AgentOneTestedClassTest {
 
 				+ "Object[] inputParams_enter = new Object[]{"
 				+ "JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\"), "
-				+ "JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"coucou\\\",\\\"value\\\":7,\\\"valueObject\\\":8,\\\"set\\\":{\\\"@type\\\":\\\"java.util.LinkedHashSet\\\"}}\")};"
+				+ "JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"coucou\\\",\\\"value\\\":7,\\\"valueObject\\\":8,\\\"set\\\":{\\\"@type\\\":\\\"java.util.HashSet\\\"}}\")};"
 				+ "Object[] inputParams_exit = new Object[]{"
 				+ "JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\"), "
-				+ "JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"coucou\\\",\\\"value\\\":7,\\\"valueObject\\\":8,\\\"set\\\":{\\\"@type\\\":\\\"java.util.LinkedHashSet\\\"}}\")};"
+				+ "JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"coucou\\\",\\\"value\\\":7,\\\"valueObject\\\":8,\\\"set\\\":{\\\"@type\\\":\\\"java.util.HashSet\\\"}}\")};"
 				+ "Object testedMethodResult = testedClass.myMethod2ParamPrimitifResultPrimitif((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":90.4}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "}");
 	}
