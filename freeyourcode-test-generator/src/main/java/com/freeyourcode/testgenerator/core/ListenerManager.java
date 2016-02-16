@@ -7,13 +7,16 @@ import java.util.Map;
 import com.freeyourcode.testgenerator.core.factory.DefaultTestGeneratorListenerFactory;
 import com.freeyourcode.testgenerator.core.factory.TestGeneratorListenerFactory;
 import com.freeyourcode.testgenerator.core.listener.TestGeneratorListener;
+import com.freeyourcode.testgenerator.server.ServerStateListener;
 import com.google.common.base.Preconditions;
 
-public class ListenerManager {
+public class ListenerManager implements ServerStateListener {
 
 	private static class MethodStack extends LinkedList<TestGeneratorListener> {
 		private static final long serialVersionUID = 8656389576594141981L;
 	}
+
+	private boolean isStarted;
 
 	// FIXME est ce qu'utiliser la meme stack pour des methodes de meme nom avec differents params pourrait poser un probleme ?!
 	private final Map<String, MethodStack> listeners = new HashMap<String, MethodStack>();
@@ -33,6 +36,10 @@ public class ListenerManager {
 	}
 
 	public void onMethodInput(Class<?> methodClass, String methodName, boolean isVoidMethod, Object[] params, Class<?>[] paramClasses, boolean isStatic) {
+		if (!isStarted) {
+			return;
+		}
+
 		MethodStack currentStack = listeners.get(methodName);
 		if (currentStack == null) {
 			currentStack = new MethodStack();
@@ -58,6 +65,10 @@ public class ListenerManager {
 	}
 
 	public void onMethodOutput(String methodName, Object returnedValue) {
+		if (!isStarted) {
+			return;
+		}
+
 		TestGeneratorListener listener = removeListener(methodName);
 		if (listener != null) {
 			listener.onOutput(returnedValue);
@@ -67,6 +78,10 @@ public class ListenerManager {
 	}
 
 	public void onException(String methodName, Exception e) {
+		if (!isStarted) {
+			return;
+		}
+
 		TestGeneratorListener listener = removeListener(methodName);
 		if (listener != null) {
 			listener.onException(e);
@@ -76,6 +91,10 @@ public class ListenerManager {
 	}
 
 	public void onEventIn(Class<?> methodClass, String methodName, boolean voidMethod, Object[] params, Class<?>[] paramClasses, Class<?> returnedClass, boolean isStatic) {
+		if (!isStarted) {
+			return;
+		}
+
 		if (listeners.size() > 0) {
 			MethodDescriptor descriptor = new MethodDescriptor(methodClass, methodName, voidMethod, paramClasses, isStatic);
 			CallOnMock event = factory.createAssociatedCallOnMock(descriptor, params, returnedClass);
@@ -92,6 +111,10 @@ public class ListenerManager {
 	}
 
 	public void onEventOut(Object outputValue) {
+		if (!isStarted) {
+			return;
+		}
+
 		if (listeners.size() > 0) {
 			if (pendingEvents.size() > 0) {
 				fireEventIsFinished(pendingEvents.removeLast().setResponse(outputValue));
@@ -102,6 +125,10 @@ public class ListenerManager {
 	}
 
 	public void onEventException(Exception e) {
+		if (!isStarted) {
+			return;
+		}
+
 		if (listeners.size() > 0) {
 			if (pendingEvents.size() > 0) {
 				fireEventIsFinished(pendingEvents.removeLast().setException(e));
@@ -122,6 +149,10 @@ public class ListenerManager {
 	}
 
 	public void onSpy(Class<?> spiedClass) {
+		if (!isStarted) {
+			return;
+		}
+
 		for (MethodStack stack : listeners.values()) {
 			for (TestGeneratorListener listener : stack) {
 				listener.onSpy(spiedClass);
@@ -135,6 +166,18 @@ public class ListenerManager {
 
 	public ListenerManagerConfig getConfig() {
 		return config;
+	}
+
+	@Override
+	public void startKilling() {
+		listeners.clear();
+		pendingEvents.clear();
+		isStarted = true;
+	}
+
+	@Override
+	public void stopKilling() {
+		isStarted = false;
 	}
 
 }

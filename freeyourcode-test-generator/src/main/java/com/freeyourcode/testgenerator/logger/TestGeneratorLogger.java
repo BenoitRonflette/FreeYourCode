@@ -2,33 +2,29 @@ package com.freeyourcode.testgenerator.logger;
 
 import java.util.Properties;
 
-public abstract class TestGeneratorLogger {
-	
+import com.freeyourcode.testgenerator.server.ServerStateListener;
+
+public abstract class TestGeneratorLogger implements ServerStateListener {
+
 	protected final Properties props;
-	
+
 	public TestGeneratorLogger(Properties props) {
 		this.props = props;
 	}
-	
-	public void startKilling(){
+
+	public void onGenerationSuccess(String... codeLines) {
 	}
-	
-	public void onGenerationSuccess(String... codeLines){
+
+	public void onGenerationFail(String msg, Exception e) {
 	}
-	
-	public void onGenerationFail(String msg, Exception e){
+
+	public void onUsedClass(Class<?> cls, boolean onlyForImport) {
 	}
-	
-	public void onUsedClass(Class<?> cls, boolean onlyForImport){
+
+	public void onDeclaratedField(String field, String... annotations) {
 	}
-	
-	public void onDeclaratedField(String field, String... annotations){
-	}
-	
-	public void stopKilling(){
-	}
-	
-	public Properties getProperties(){
+
+	public Properties getProperties() {
 		return props;
 	}
 

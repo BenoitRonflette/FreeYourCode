@@ -20,7 +20,6 @@ import com.freeyourcode.testgenerator.core.MethodParameters;
 import com.freeyourcode.testgenerator.core.utils.ClassResolver;
 import com.freeyourcode.testgenerator.core.utils.SignatureResolver;
 import com.freeyourcode.testgenerator.logger.TestGeneratorLogger;
-import com.freeyourcode.testgenerator.utils.TestGeneratorProperties;
 
 public class DefaultTestGeneratorListener implements TestGeneratorListener {
 
@@ -38,24 +37,27 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 
 	private final int methodId;
 
-	private final TestGeneratorLogger logger;
 	// TODO encapsuler la gestion du pendind/events
 	protected CallOnMock pendingEvent;
 	protected final EventMap events = new EventMap();
 	private final MethodDescriptor methodDescriptor;
-	private final boolean testMockitoEq;
 	int methodInputNumber = 0;
 	int methodResponseNumber = 0;
 
 	final LinkedList<String> testCodeLines = new LinkedList<String>();
 	private MethodParameters inputParameters;
 
+	private final ListenerManagerConfig config;
+
 	public DefaultTestGeneratorListener(int id, MethodDescriptor methodDescriptor, ListenerManagerConfig config) {
 		log.info("FreeYourCode Test Generator: new listener on " + methodDescriptor);
+		this.config = config;
 		this.methodId = id;
-		this.logger = config.getLogger();
 		this.methodDescriptor = methodDescriptor;
-		testMockitoEq = Boolean.parseBoolean(config.getProps().getProperty(TestGeneratorProperties.TEST_EQUALITY_ON_STUBBING, "true"));
+	}
+
+	private TestGeneratorLogger getLogger() {
+		return config.getLogger();
 	}
 
 	private static String toLowerFirstLetter(String anyString) {
@@ -107,7 +109,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		try {
 			inputParameters.freezeEnter();
 		} catch (IOException e) {
-			logger.onGenerationFail(e.getMessage(), e);
+			getLogger().onGenerationFail(e.getMessage(), e);
 		}
 	}
 
@@ -117,7 +119,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		try {
 			this.inputParameters.freezeExit();
 		} catch (Exception e) {
-			logger.onGenerationFail(e.getMessage(), e);
+			getLogger().onGenerationFail(e.getMessage(), e);
 		}
 		writeTest("@Test", outputValue, false);
 	}
@@ -142,7 +144,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 	private void closeAndWriteTestMethod() {
 		testCodeLines.add("}");
 
-		logger.onGenerationSuccess(testCodeLines.toArray(new String[testCodeLines.size()]));
+		getLogger().onGenerationSuccess(testCodeLines.toArray(new String[testCodeLines.size()]));
 	}
 
 	private void writeComment(String comment) {
@@ -151,7 +153,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 
 	private void writeTestedMethod(Object outputValue, boolean exception) throws IOException {
 		String testedClassName = methodDescriptor.getMethodClass().getSimpleName();
-		logger.onUsedClass(methodDescriptor.getMethodClass(), false);
+		getLogger().onUsedClass(methodDescriptor.getMethodClass(), false);
 
 		writeComment("Call to tested method");
 
@@ -160,10 +162,10 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 			testedClassVarName = testedClassName;
 			// FIXME si full injection,
 			// pr permettre l'injection de fields static que cette méthode pourrait utiliser.
-			// logger.onDeclaratedField(testedClassName+" "+testedClassVarName, "@InjectMocks");
+			// getLogger().onDeclaratedField(testedClassName+" "+testedClassVarName, "@InjectMocks");
 		} else {
 			testedClassVarName = toLowerFirstLetter(testedClassName);
-			logger.onDeclaratedField(testedClassName + " " + testedClassVarName, "@InjectMocks");
+			getLogger().onDeclaratedField(testedClassName + " " + testedClassVarName, "@InjectMocks");
 		}
 
 		writeParamsAsObjectArray(INPUT_PARAM_VAR_NAME + SUFFIX_ENTER, inputParameters, JsonSerialisationUtils.writeSerializedObjectsInJava(inputParameters.getFrozenParametersOnEnter()));
@@ -210,15 +212,15 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 			}
 			closeAndWriteTestMethod();
 		} catch (Exception ex) {
-			logger.onGenerationFail(ex.getMessage(), ex);
+			getLogger().onGenerationFail(ex.getMessage(), ex);
 		}
 	}
 
 	protected String declareClassIsStubbed(Class<?> cls) {
-		logger.onUsedClass(cls, true);
+		getLogger().onUsedClass(cls, true);
 		// We create a mocked object for this output event:
 		String mockedClassAsVar = toLowerFirstLetter(cls.getSimpleName()) + "Stub";
-		logger.onDeclaratedField(cls.getSimpleName() + " " + mockedClassAsVar, "@Mock");
+		getLogger().onDeclaratedField(cls.getSimpleName() + " " + mockedClassAsVar, "@Mock");
 		return mockedClassAsVar;
 	}
 
@@ -235,6 +237,8 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 	}
 
 	private List<String> writeStubs() throws Exception {
+		boolean testMockitoEq = config.isTestEqualityOnStubbing();
+
 		List<String> verifyCalledEvent = new ArrayList<String>();
 		// TODO refac en petites methodes
 
@@ -252,7 +256,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 
 			// TODO refac car trop de code
 			for (Class<?> classWithStaticMock : classesWithStaticMock) {
-				logger.onUsedClass(classWithStaticMock, false);
+				getLogger().onUsedClass(classWithStaticMock, false);
 				testCodeLines.add("PowerMockito.mockStatic(" + classWithStaticMock.getSimpleName() + ".class);");
 			}
 
@@ -422,16 +426,16 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 	}
 
 	private String cast(Class<?> cls, String var) {
-		logger.onUsedClass(cls, true);
+		getLogger().onUsedClass(cls, true);
 		return "(" + cls.getSimpleName() + ")" + var;
 	}
 
 	@Override
 	public void onSpy(Class<?> cls) {
 		String spiedClassName = cls.getSimpleName();
-		logger.onUsedClass(cls, true);
+		getLogger().onUsedClass(cls, true);
 		String spiedClassVarName = toLowerFirstLetter(spiedClassName);
-		logger.onDeclaratedField(spiedClassName + " " + spiedClassVarName, "@InjectMocks", "@Spy");
+		getLogger().onDeclaratedField(spiedClassName + " " + spiedClassVarName, "@InjectMocks", "@Spy");
 	}
 
 	@Override
@@ -440,7 +444,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		try {
 			pendingEvent.getParameters().freezeEnter();
 		} catch (IOException e) {
-			logger.onGenerationFail("The event params cannot be frozen on entering because " + e.getMessage(), e);
+			getLogger().onGenerationFail("The event params cannot be frozen on entering because " + e.getMessage(), e);
 		}
 	}
 
@@ -453,7 +457,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 			event.freezeResponse();
 			event.freezeDiffsExit();
 		} catch (Exception e) {
-			logger.onGenerationFail("The event params and response cannot be frozen on exit because " + e.getMessage(), e);
+			getLogger().onGenerationFail("The event params and response cannot be frozen on exit because " + e.getMessage(), e);
 		}
 	}
 

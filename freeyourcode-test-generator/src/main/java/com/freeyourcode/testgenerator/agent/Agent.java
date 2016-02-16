@@ -31,8 +31,8 @@ public class Agent {
 	public static void premain(String args, Instrumentation instr) {
 		Properties properties = PropertiesUtils.parseProperties(args);
 		String configFile = properties.getProperty(AgentProperties.CONFIG_FILE_PATH);
-		
-		if(configFile == null || configFile.isEmpty()){
+
+		if (configFile == null || configFile.isEmpty()) {
 			throw new RuntimeException("Config file is required");
 		}
 
@@ -46,15 +46,15 @@ public class Agent {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		Properties applicationProperties = XMLUtils.extractProperties(doc.getFirstChild());
 
 		final TestGeneratorLogger logger = createLogger(doc);
-		TestGeneratorNanoHTTPD server = new TestGeneratorNanoHTTPD(logger, applicationProperties);
+		TestGeneratorNanoHTTPD server = new TestGeneratorNanoHTTPD(applicationProperties);
 
 		NodeList pluginsConfig = XMLUtils.check1Most(doc.getElementsByTagName(AgentConfigTags.PLUGINS), AgentConfigTags.PLUGINS, true);
-		instr.addTransformer(new AgentClassFileTransformer(pluginsConfig, logger, applicationProperties));
-		
+		instr.addTransformer(new AgentClassFileTransformer(pluginsConfig, logger, applicationProperties, server));
+
 		try {
 			server.start();
 		} catch (IOException e) {
@@ -79,7 +79,7 @@ public class Agent {
 				logger = (TestGeneratorLogger) Class.forName(loggerClass).getConstructor(Properties.class).newInstance(props);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
-			} 
+			}
 		}
 		return logger;
 	}

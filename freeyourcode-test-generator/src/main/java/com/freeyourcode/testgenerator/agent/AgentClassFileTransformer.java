@@ -21,33 +21,40 @@ import com.freeyourcode.testgenerator.agent.plugins.Plugin;
 import com.freeyourcode.testgenerator.core.ListenerManager;
 import com.freeyourcode.testgenerator.core.ListenerManagerConfig;
 import com.freeyourcode.testgenerator.logger.TestGeneratorLogger;
+import com.freeyourcode.testgenerator.server.TestGeneratorNanoHTTPD;
 import com.freeyourcode.testgenerator.utils.XMLUtils;
 
 /**
- * Plug the Legacy Code Test Generator to modify the listened public class methods. 
+ * Plug the Legacy Code Test Generator to modify the listened public class methods.
  * 
  * @author BRE
  *
  */
 public class AgentClassFileTransformer implements ClassFileTransformer {
-	
+
 	private final List<Plugin> plugins = new ArrayList<Plugin>();
-	
+
 	private static final ClassPool classPool = ClassPool.getDefault();
-	
+
 	private final TestGeneratorLogger logger;
-	
-	
-	public AgentClassFileTransformer(NodeList pluginsConfig, TestGeneratorLogger logger, Properties props) {
+
+	public AgentClassFileTransformer(NodeList pluginsConfig, TestGeneratorLogger logger, Properties props, TestGeneratorNanoHTTPD server) {
 		this.logger = logger;
-		
+
 		ListenerManagerConfig config = new ListenerManagerConfig(props, logger);
 		ListenerManager manager = new ListenerManager(config);
-		
-		//FIXME: a etudier Pr le $sig, on charge les classes depuis un context loader, sinon elles ne seront pas trouvées dans le classpath.
+
+		server.registerListener(logger);
+		server.registerListener(manager);
+		server.registerUpdatableProperties("Output file", logger.getProperties());
+		server.registerUpdatableProperties("Test", config.getProps());
+
+		// FIXME: a etudier Pr le $sig, on charge les classes depuis un context loader, sinon elles ne seront pas trouvées dans le classpath.
 		Desc.useContextClassLoader = true;
-		
-		for(Element pluginConfig : XMLUtils.extractElementsFromNodeList(pluginsConfig, AgentConfigTags.PLUGIN, true)){
+
+		// TODO improvement: be able to register plugin updatable properties.
+
+		for (Element pluginConfig : XMLUtils.extractElementsFromNodeList(pluginsConfig, AgentConfigTags.PLUGIN, true)) {
 			try {
 				String pluginClass = pluginConfig.getAttribute(AgentConfigCommonAttr.CLASS);
 				Plugin plugin = (Plugin) Class.forName(pluginClass).newInstance();
@@ -55,41 +62,37 @@ public class AgentClassFileTransformer implements ClassFileTransformer {
 				plugin.start(pluginConfig, manager);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
-			} 
+			}
 		}
 	}
 
 	@Override
-	public byte[] transform(ClassLoader loader, String className,
-			Class<?> classBeingRedefined, ProtectionDomain protectionDomain,
-			byte[] classfileBuffer) throws IllegalClassFormatException {
-	
+	public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
+
 		byte[] returnedBuffer = null;
-		for(Plugin plugin : plugins){
-			if(plugin.handleClassDefinition(loader, className)){
-				try{
+		for (Plugin plugin : plugins) {
+			if (plugin.handleClassDefinition(loader, className)) {
+				try {
 					String normalizedClassName = className.replaceAll("/", ".");
-					//If a program is running on a web application server such as JBoss and Tomcat, the ClassPool object may not be able to find user classes since such a web application server uses multiple class loaders as well as the system class loader.
+					// If a program is running on a web application server such as JBoss and Tomcat, the ClassPool object may not be able to find user classes since such a web application server uses multiple class loaders as well as the system class
+					// loader.
 					classPool.insertClassPath(new LoaderClassPath(loader));
 					CtClass cc = classPool.get(normalizedClassName);
 					plugin.define(cc);
-		            returnedBuffer = cc.toBytecode();
-		            //FIXME verif le detach
-		            cc.detach();
-				}
-				catch(Exception e){
+					returnedBuffer = cc.toBytecode();
+					// FIXME verif le detach
+					cc.detach();
+				} catch (Exception e) {
 					logger.onGenerationFail(e.getMessage(), e);
 				}
 			}
 		}
-		
+
 		return returnedBuffer;
 	}
 
 	public TestGeneratorLogger getLogger() {
 		return logger;
 	}
-	
-	
-	
+
 }
