@@ -107,6 +107,7 @@ public class HibernateCompatibilityPlugin implements Plugin {
 						HibernateCallOnMock hEvent = (HibernateCallOnMock) event;
 						if (!hEvent.isAlreadyCloned) {
 							try {
+								log.info("onEventEnd on " + event.getDescriptor());
 								hEvent.freezeFindResponseInParams();
 								hEvent.getParameters().setInputParams(getCloner().deepClone(event.getParameters().getInputParams()));
 								hEvent.setResponse(getCloner().deepClone(event.getResponse()));
