@@ -87,6 +87,7 @@ If you forget to click on "stop killing" sing the server interface before killin
 
 <p>This plugin generates a TestNG test unit for each call to a public method with the same parameters and checking the result value or the thrown exception.</p>
 <p>You can include or exclude several classes and methods. It's the union between all inclusion which builds the final inclusion. Exclusion patterns are applied after.</p>
+<p>When a method is defined in a superclass and not redefined in subclass, you can exclude it with subclass class path (to exclude it only for this subclass) or use the superclass path (to exclude it for all subclasses).</p>
 <p>All values are considered as Java regex patterns.</p>
 
 <pre><code class="html">&lt;agent port="8094"&gt;

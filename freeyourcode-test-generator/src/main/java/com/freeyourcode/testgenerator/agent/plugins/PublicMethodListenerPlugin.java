@@ -2,6 +2,7 @@ package com.freeyourcode.testgenerator.agent.plugins;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -17,6 +18,7 @@ import com.freeyourcode.testgenerator.agent.constant.AgentConfigTags;
 import com.freeyourcode.testgenerator.core.ListenerManager;
 import com.freeyourcode.testgenerator.utils.XMLUtils;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 
 public abstract class PublicMethodListenerPlugin implements Plugin {
 
@@ -112,18 +114,38 @@ public abstract class PublicMethodListenerPlugin implements Plugin {
 		return false;
 	}
 
+	private Set<CtMethod> getAllValidMethods(CtMethod[]... methodGroups) {
+		Set<CtMethod> methods = Sets.newHashSet();
+		for (CtMethod[] methodGroup : methodGroups) {
+			for (CtMethod method : methodGroup) {
+				if (!Modifier.isVolatile(method.getModifiers())) {
+					methods.add(method);
+				}
+			}
+		}
+		return methods;
+	}
+
 	@Override
 	public final void define(CtClass redefinedClass) throws Exception {
 		CtClass exceptionClass = ClassPool.getDefault().get("java.lang.Exception");
-		CtMethod[] methods = redefinedClass.getMethods();
-		for (CtMethod method : methods) {
+
+		// There is a Javassist bug when we use redefinedClass.getMethods() with generic class types, when the returned type is a parameterized type and with no parameters,
+		// it is not provided by redefinedClass.getMethods() but only by redefinedClass.getDeclaredMethods(). Union is all methods !
+		// (method hashcode is the same between the version with parameterized type and with the defined type...).
+		// But the method provided by the superclass without no defined type is considered as volatile, so if we keep non volatile methods only,
+		// getting the union of declared methods and super class methods then put them into a Set, we get all valid methods.
+		// (see test com.freeyourcode.testgenerator.test.agent.cases.AgentTestClassCallingGenericClassImpl.testCompute() about).
+		for (CtMethod method : getAllValidMethods(redefinedClass.getMethods(), redefinedClass.getDeclaredMethods())) {
 			if (shouldInstrumentMethod(redefinedClass, method)) {
 				boolean modifyMethod = true;
 				// If method is defined in a superclass, we have to override it (we don't want to listen all subclasses
 				// which share the same superclass !).
 				if (shouldOverrideMethod(redefinedClass, method)) {
 					// All methods cannot be overrided !
-					if (canOverrideMethod(method)) {
+					if (canOverrideMethod(method)
+					// We can exclude a method by redefined class in configuration even if the method is not overridden
+							&& !isExcludeMethod(method.getLongName().replace(method.getDeclaringClass().getName(), redefinedClass.getName()))) {
 						method = override(redefinedClass, method);
 					} else {
 						modifyMethod = false;
@@ -153,10 +175,15 @@ public abstract class PublicMethodListenerPlugin implements Plugin {
 	}
 
 	private boolean shouldInstrumentMethod(CtClass redefinedClass, CtMethod method) {
-		String nameWithParameterTypes = method.getLongName().replace(redefinedClass.getName() + ".", "");
+		// Method declaring class could be different that the redefined class (a super class for instance), so
+		// we replace the declaring class name by "" to get the method name with parameters.
+		String nameWithParameterTypes = method.getLongName().replace(method.getDeclaringClass().getName() + ".", "");
 		int modifiers = method.getModifiers();
 		return Modifier.isPublic(modifiers) && !Modifier.isNative(modifiers)//
-				&& isInclude(redefinedClass.getName(), nameWithParameterTypes) && !isExcludeMethod(method.getLongName());
+				&& isInclude(redefinedClass.getName(), nameWithParameterTypes)//
+				// isExcludeMethod(method.getLongName()) excludes the method if the exclusion carries on the declaring class (could
+				// be different that the redefined class if it's a superclass)
+				&& !isExcludeMethod(method.getLongName());
 	}
 
 	abstract void modifyMethod(CtClass redefinedClass, CtMethod method, CtClass exceptionClass) throws Exception;

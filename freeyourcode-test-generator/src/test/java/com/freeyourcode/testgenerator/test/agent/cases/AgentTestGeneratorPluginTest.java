@@ -346,4 +346,38 @@ public class AgentTestGeneratorPluginTest extends AgentOneTestedClassTest {
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"value\\\":14}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "}");
 	}
 
+	@Test
+	public void testCheckMethodFromSuperClassNotOverridden() throws Exception {
+		invokeMethod("methodFromSuperClassNotOverridden", 2);
+		assertTestIs("@Test" + "public void testmethodFromSuperClassNotOverridden_" + nextTestId() + "() throws Exception {" + "//Call to tested method"
+				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":2}\")};"
+				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":2}\")};"
+				+ "Object testedMethodResult = testedClass.methodFromSuperClassNotOverridden((Integer)inputParams_enter[0]);" + "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":-2}\"), testedMethodResult);"
+				+ "assertEquals(inputParams_exit, inputParams_enter);" + "}");
+	}
+
+	@Test
+	public void testCheckMethodFromSuperClassNotOverriddenButSkipped() throws Exception {
+		invokeMethod("methodFromSuperClassNotOverriddenButSkipped", 2);
+		// This method is excluded by xml configuration !
+		assertTestIs("");
+	}
+
+	@Test
+	public void testCheckMethodFromSuperClassNotOverriddenButSkippedBySuperClassName() throws Exception {
+		invokeMethod("methodFromSuperClassNotOverriddenButSkippedBySuperClassName", 2);
+		// This method is excluded by xml configuration !
+		assertTestIs("");
+	}
+
+	@Test
+	public void testCheckMethodFromSuperClassButOverridden() throws Exception {
+		invokeMethod("methodFromSuperClassButOverridden", 2);
+		assertTestIs("@Test" + "public void testmethodFromSuperClassButOverridden_" + nextTestId() + "() throws Exception {" + "//Call to tested method"
+				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":2}\")};"
+				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":2}\")};"
+				+ "Object testedMethodResult = testedClass.methodFromSuperClassButOverridden((Integer)inputParams_enter[0]);" + "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":32}\"), testedMethodResult);"
+				+ "assertEquals(inputParams_exit, inputParams_enter);" + "}");
+	}
+
 }

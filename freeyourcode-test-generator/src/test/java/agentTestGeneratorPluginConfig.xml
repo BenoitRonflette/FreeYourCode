@@ -8,6 +8,10 @@
 			<includes>
 				<class>com.freeyourcode.testgenerator.test.TestedClass</class>
 			</includes>
+			<excludes>
+				<method>com.freeyourcode.testgenerator.test.TestedClass.methodFromSuperClassNotOverriddenButSkipped.*</method>
+				<method>com.freeyourcode.testgenerator.test.SuperTestedClass.methodFromSuperClassNotOverriddenButSkippedBySuperClassName.*</method>
+			</excludes>
 		</plugin>
 	</plugins>
 </agent>

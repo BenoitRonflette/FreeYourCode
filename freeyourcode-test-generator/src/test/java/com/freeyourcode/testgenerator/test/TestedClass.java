@@ -1,6 +1,6 @@
 package com.freeyourcode.testgenerator.test;
 
-public class TestedClass {
+public class TestedClass extends SuperTestedClass {
 
 	public void myMethodNoParamNoResult() {
 	}
@@ -79,6 +79,11 @@ public class TestedClass {
 
 	public String myMethodIsReturningSubBeanValue(double d, TestedBean o) {
 		return o.getSubBean() != null ? o.getSubBean().getValue2() : null;
+	}
+
+	@Override
+	public int methodFromSuperClassButOverridden(int value) {
+		return super.methodFromSuperClassButOverridden(value) * -4;
 	}
 
 }

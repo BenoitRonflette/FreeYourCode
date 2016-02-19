@@ -11,7 +11,7 @@ import com.freeyourcode.testgenerator.test.agent.AgentOneTestedClassTest;
 public class AgentTestClassCallingGenericClassImpl extends AgentOneTestedClassTest {
 
 	@BeforeClass
-	public void lancementAgent() {
+	public void lancementAgent() throws Exception {
 		lancementAgent(AgentProperties.CONFIG_FILE_PATH + "=./src/test/java/agentTestClassCallingGenericClassImpl.xml");
 	}
 
