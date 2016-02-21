@@ -2,6 +2,14 @@ package com.freeyourcode.testgenerator.test;
 
 public class TestedClass extends SuperTestedClass {
 
+	public TestedClass() {
+
+	}
+
+	public TestedClass(TestedBean bean) {
+		bean.getLibelle();
+	}
+
 	public void myMethodNoParamNoResult() {
 	}
 

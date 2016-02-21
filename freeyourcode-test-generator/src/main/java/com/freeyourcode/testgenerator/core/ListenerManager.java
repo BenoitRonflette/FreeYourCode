@@ -90,6 +90,24 @@ public class ListenerManager implements ServerStateListener {
 		}
 	}
 
+	public void onEventCreation(Class<?> methodClass) {
+		if (!isStarted) {
+			return;
+		}
+
+		if (listeners.size() > 0) {
+			for (MethodStack stack : listeners.values()) {
+				for (TestGeneratorListener listener : stack) {
+					// we declare the mocked class only if this creation is performed whereas there is no pending event (so creation
+					// is performed by the tested code directly).
+					if (listener.canListenEvent(null)) {
+						listener.onEventCreation(methodClass);
+					}
+				}
+			}
+		}
+	}
+
 	public void onEventIn(Class<?> methodClass, String methodName, boolean voidMethod, Object[] params, Class<?>[] paramClasses, Class<?> returnedClass, boolean isStatic) {
 		if (!isStarted) {
 			return;

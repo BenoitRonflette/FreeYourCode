@@ -469,4 +469,10 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		// else: other events between the current started one and its future end.
 	}
 
+	@Override
+	public void onEventCreation(Class<?> eventClass) {
+		// TODO refac sur la gestion de la déclaration des mocks.
+		declareClassIsStubbed(eventClass);
+	}
+
 }

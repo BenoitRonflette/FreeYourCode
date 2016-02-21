@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
+import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
@@ -127,7 +128,7 @@ public abstract class PublicMethodListenerPlugin implements Plugin {
 	}
 
 	@Override
-	public final void define(CtClass redefinedClass) throws Exception {
+	public void define(CtClass redefinedClass) throws Exception {
 		CtClass exceptionClass = ClassPool.getDefault().get("java.lang.Exception");
 
 		// There is a Javassist bug when we use redefinedClass.getMethods() with generic class types, when the returned type is a parameterized type and with no parameters,
@@ -174,7 +175,7 @@ public abstract class PublicMethodListenerPlugin implements Plugin {
 		return !Modifier.isFinal(modifiers) && !Modifier.isAbstract(modifiers) && !Modifier.isStatic(modifiers);
 	}
 
-	private boolean shouldInstrumentMethod(CtClass redefinedClass, CtMethod method) {
+	protected boolean shouldInstrumentMethod(CtClass redefinedClass, CtBehavior method) {
 		// Method declaring class could be different that the redefined class (a super class for instance), so
 		// we replace the declaring class name by "" to get the method name with parameters.
 		String nameWithParameterTypes = method.getLongName().replace(method.getDeclaringClass().getName() + ".", "");
