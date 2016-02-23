@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
   <groupId>com.freeyourcode</groupId>
-  <artifactId>prettyjson</artifactId>
+  <artifactId>test-utils</artifactId>
   <versioning>
     <versions>
       <version>0.0.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20160223153301</lastUpdated>
+    <lastUpdated>20160223153958</lastUpdated>
   </versioning>
 </metadata>
