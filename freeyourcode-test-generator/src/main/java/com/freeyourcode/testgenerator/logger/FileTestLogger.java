@@ -6,8 +6,9 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,9 +32,9 @@ public class FileTestLogger extends TestGeneratorLogger {
 	private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 	private final List<String[]> generatedTests = new ArrayList<String[]>();
-	private final Set<Class<?>> importedClasses = new HashSet<Class<?>>();
-	private final Set<Class<?>> testedClasses = new HashSet<Class<?>>();
-	private final Map<String, Set<String>> declaratedFields = new HashMap<String, Set<String>>();
+	private final Set<Class<?>> importedClasses = new LinkedHashSet<Class<?>>();
+	private final Set<Class<?>> testedClasses = new LinkedHashSet<Class<?>>();
+	private final Map<String, Set<String>> declaratedFields = new LinkedHashMap<String, Set<String>>();
 
 	public FileTestLogger(Properties props) {
 		super(props);
