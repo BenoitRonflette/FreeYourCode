@@ -55,7 +55,7 @@ If you forget to click on "stop killing" sing the server interface before killin
 <ul><b>Main parameters</b>:
 <li><b><i>port</i></b>: the used port to be able to control the Agent (mandatory),</li>
 <li><b><i>autoStart</i></b>: if the agent begins to listen to the code when it starts (optionnal, default false),</li>
-<li><b><i>testEqualityOnStubbing</i></b>: when a method is mocked with Mockito, if the method parameters have to be checked by Mockito with Mockito.eq() (optionnal, default false). Disable this feature if you want more flexible tests, in fact, if a value changes in your code, the mocked method won't be executed properly and the tests should fail farther for another reason, so that will be difficult to know the modified field which doesn't match. Consider false for this property like a "soft" mode and true like an "hard" one. With "soft" mode, the test will fail in the final check indicating the wrong field.</li>
+<li><b><i>testEqualityOnStubbing</i></b>: when a method is mocked with Mockito, if the method parameters have to be checked by Mockito with Mockito.eq() (optionnal, default false). Disable this feature if you want more flexible tests, in fact, if a value changes in your code, the mocked method won't be executed properly and the tests should fail farther for another reason, so that will be difficult to know the modified field which doesn't match. Consider false for this property like a "soft" mode and true like an "hard" one. With "soft" mode, the test will fail in the final check indicating the wrong field. If you haven't defined an equals method for all objects in parameters, you cannot use "hard" mode.</li>
 </ul>
 
 <br/>
