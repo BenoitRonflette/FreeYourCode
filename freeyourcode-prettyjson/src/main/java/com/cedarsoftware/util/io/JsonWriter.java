@@ -2014,7 +2014,7 @@ public class JsonWriter implements Closeable, Flushable
     {
         for (Object o : map.keySet())
         {
-            if (!(o instanceof String || o instanceof Double || o instanceof Long || o instanceof Boolean))
+            if (!(o instanceof String))
             {
                 return false;
             }
