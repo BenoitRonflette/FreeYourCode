@@ -31,7 +31,7 @@ public class ListenerManagerConfig {
 	}
 
 	private String defaultTestEqualityValue() {
-		return String.valueOf(true);
+		return String.valueOf(false);
 	}
 
 }

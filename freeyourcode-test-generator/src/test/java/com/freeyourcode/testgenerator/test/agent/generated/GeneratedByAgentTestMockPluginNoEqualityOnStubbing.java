@@ -10,8 +10,8 @@ import org.testng.annotations.Test;
 
 import com.freeyourcode.test.utils.GeneratedTestCase;
 import com.freeyourcode.prettyjson.JsonSerialisationUtils;
-import com.freeyourcode.testgenerator.test.TestedBean;
 import com.freeyourcode.testgenerator.test.TestedClass;
+import com.freeyourcode.testgenerator.test.TestedBean;
 import com.freeyourcode.testgenerator.test.ClassCallingTestedClassWithFieldInjection;
 import java.lang.Double;
 
