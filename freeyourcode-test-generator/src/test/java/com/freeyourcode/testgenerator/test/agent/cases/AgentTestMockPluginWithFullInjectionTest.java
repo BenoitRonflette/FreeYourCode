@@ -2,8 +2,7 @@ package com.freeyourcode.testgenerator.test.agent.cases;
 
 import java.lang.reflect.InvocationTargetException;
 
-import junit.framework.Assert;
-
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

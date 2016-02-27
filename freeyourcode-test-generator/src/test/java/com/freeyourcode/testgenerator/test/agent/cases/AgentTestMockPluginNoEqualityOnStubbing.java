@@ -3,8 +3,7 @@ package com.freeyourcode.testgenerator.test.agent.cases;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
-import junit.framework.Assert;
-
+import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -405,6 +404,23 @@ public class AgentTestMockPluginNoEqualityOnStubbing extends AgentOneTestedClass
 				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethodIsReturningSubBeanValue((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"\\\"v2\\\"\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodIsReturningSubBeanValue(Mockito.anyDouble(), (TestedBean)Mockito.any());" + "}");
+	}
+
+	@Test
+	public void testMockOrderingWithAny() throws Exception {
+		// methodReturning0AfterComputing performs v-2v+v, i.e. 0, each value is returned by a mocked method, if ordering is preserved,
+		// expected value is 0, else, either operation will be 2v - v + v i.e 2v or v - v + 2v i.e 2v. If v different than 0, 0 will be returned
+		// if and only if mock ordering is preserved !
+		invokeMethod("methodReturning0AfterComputing", 2);
+		assertTestIs("@Test" + "public void testmethodReturning0AfterComputing_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Object[] getItself_diffsOnExit_0 = new Object[]{null};"
+				+ "Object[] getItself_diffsOnExit_1 = new Object[]{null};" + "Object[] getItself_diffsOnExit_2 = new Object[]{null};" + "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":2}\");"
+				+ "Object response1 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":4}\");" + "Object response2 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":2}\");"
+				+ "Mockito.when(testedClassStub.getItself(Mockito.anyInt())).then(exitAnswer(getItself_diffsOnExit_0, response0)).then(exitAnswer(getItself_diffsOnExit_1, response1)).then(exitAnswer(getItself_diffsOnExit_2, response2));" + ""
+				+ "//Call to tested method" + "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":2}\")};"
+				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"int\\\",\\\"value\\\":2}\")};"
+				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.methodReturning0AfterComputing((Integer)inputParams_enter[0]);"
+				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\"}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
+				+ "Mockito.verify(testedClassStub, Mockito.times(3)).getItself(Mockito.anyInt());" + "}");
 	}
 
 }

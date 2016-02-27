@@ -73,4 +73,7 @@ public class ClassCallingTestedClassWithFieldInjection {
 		return testedClass.myMethodIsReturningSubBeanValue(d, o);
 	}
 
+	public double methodReturning0AfterComputing(int v) {
+		return testedClass.getItself(v) - testedClass.getItself(2 * v) + testedClass.getItself(v);
+	}
 }

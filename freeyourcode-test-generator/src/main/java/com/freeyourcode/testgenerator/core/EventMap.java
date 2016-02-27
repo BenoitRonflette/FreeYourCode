@@ -1,5 +1,6 @@
 package com.freeyourcode.testgenerator.core;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -11,35 +12,58 @@ import com.google.common.collect.Lists;
 
 public class EventMap {
 
-	private final Map<MethodDescriptor, ArrayListMultimap<List<Object>, CallOnMock>> eventsByCallByMethodDescriptor = new LinkedHashMap<MethodDescriptor, ArrayListMultimap<List<Object>, CallOnMock>>();
+	private static class EventsOnMethod {
+		// All received events in reception order
+		private final List<CallOnMock> events = Lists.newLinkedList();
+
+		// All received events by call parameters in reception order (we have to classify the events when we receive the call
+		// because the input could change later). This is
+		private final ArrayListMultimap<List<Object>, CallOnMock> eventsByParameters = ArrayListMultimap.create();
+
+		public EventsOnMethod() {
+		}
+
+		public void addEvent(CallOnMock event) {
+			events.add(event);
+			eventsByParameters.put(Lists.newArrayList(event.getParameters().getInputParams()), event);
+		}
+
+	}
+
+	private final Map<MethodDescriptor, EventsOnMethod> eventsByMethodDescriptor = new LinkedHashMap<MethodDescriptor, EventsOnMethod>();
 
 	public EventMap() {
 	}
 
 	public void put(CallOnMock event) {
-		MethodDescriptor descriptor = event.getDescriptor();
-		ArrayListMultimap<List<Object>, CallOnMock> methodByParameters = eventsByCallByMethodDescriptor.get(descriptor);
-		if (methodByParameters == null) {
-			methodByParameters = ArrayListMultimap.create();
-			eventsByCallByMethodDescriptor.put(descriptor, methodByParameters);
+		EventsOnMethod eventsOnMethod = eventsByMethodDescriptor.get(event.getDescriptor());
+		if (eventsOnMethod == null) {
+			eventsOnMethod = new EventsOnMethod();
+			eventsByMethodDescriptor.put(event.getDescriptor(), eventsOnMethod);
 		}
-		methodByParameters.put(Lists.newArrayList(event.getParameters().getInputParams()), event);
+		eventsOnMethod.addEvent(event);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<CallOnMock> getEvents(MethodDescriptor descriptor, List<Object> parameters) {
-		ArrayListMultimap<List<Object>, CallOnMock> params = eventsByCallByMethodDescriptor.get(descriptor);
-		return params != null ? params.get(parameters) : Collections.EMPTY_LIST;
+	public Collection<List<CallOnMock>> getEventsByParameters(MethodDescriptor descriptor) {
+		EventsOnMethod eventsOnMethod = eventsByMethodDescriptor.get(descriptor);
+		return eventsOnMethod != null ? eventsOnMethod.eventsByParameters.asMap().values() : Collections.EMPTY_LIST;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<CallOnMock> getEvents(MethodDescriptor descriptor) {
+		EventsOnMethod eventsOnMethod = eventsByMethodDescriptor.get(descriptor);
+		return eventsOnMethod != null ? eventsOnMethod.events : Collections.EMPTY_LIST;
 	}
 
 	@SuppressWarnings("unchecked")
 	public Set<List<Object>> getParameters(MethodDescriptor descriptor) {
-		ArrayListMultimap<List<Object>, CallOnMock> params = eventsByCallByMethodDescriptor.get(descriptor);
-		return params != null ? params.keySet() : Collections.EMPTY_SET;
+		EventsOnMethod eventsOnMethod = eventsByMethodDescriptor.get(descriptor);
+		return eventsOnMethod != null ? eventsOnMethod.eventsByParameters.keySet() : Collections.EMPTY_SET;
 	}
 
 	public Set<MethodDescriptor> getMethodDescriptors() {
-		return eventsByCallByMethodDescriptor.keySet();
+		return eventsByMethodDescriptor.keySet();
 	}
 
 }

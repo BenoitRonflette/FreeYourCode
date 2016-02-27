@@ -8,9 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import junit.framework.Assert;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class DeepTest {

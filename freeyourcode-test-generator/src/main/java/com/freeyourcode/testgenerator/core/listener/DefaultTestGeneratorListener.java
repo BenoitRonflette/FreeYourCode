@@ -39,7 +39,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 
 	// TODO encapsuler la gestion du pendind/events
 	protected CallOnMock pendingEvent;
-	protected final EventMap events = new EventMap();
+	protected final EventMap eventMap = new EventMap();
 	private final MethodDescriptor methodDescriptor;
 	int methodInputNumber = 0;
 	int methodResponseNumber = 0;
@@ -242,7 +242,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		List<String> verifyCalledEvent = new ArrayList<String>();
 		// TODO refac en petites methodes
 
-		Set<MethodDescriptor> descriptors = events.getMethodDescriptors();
+		Set<MethodDescriptor> descriptors = eventMap.getMethodDescriptors();
 		if (descriptors.size() > 0) {
 			writeComment("Mock the stub methods");
 			StringBuilder sb = new StringBuilder();
@@ -264,44 +264,11 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 				// FIXME si mock static, y a t'il besoin de déclarer la var ?! uniquement si full injection ??
 				String mockedClassAsVar = declareClassIsStubbed(descriptor.getMethodClass());
 
-				String callVar = descriptor.isStatic() ? descriptor.getMethodClass().getSimpleName() : mockedClassAsVar;
+				String mockedObjectVariableName = descriptor.isStatic() ? descriptor.getMethodClass().getSimpleName() : mockedClassAsVar;
 
-				// We have to resolve the signature. We haven't used javassist $sig because sometimes, with generic, we ignore
-				// the real parameter types when the class is modified by javassist. So we have to deduce the real signature
-				// ourselves.
-				SignatureResolver sigResolver = new SignatureResolver(descriptor);
+				SignatureResolver sigResolver = createSignatureResolverForStubbing(descriptor);
 
-				int callNumberForThisMethod = 0;
-
-				// TODO refac
-				List<CallOnMock> allEvents = new ArrayList<CallOnMock>();
-
-				for (List<Object> parameters : events.getParameters(descriptor)) {
-
-					// Get events before calling prepareObjectsForCast
-					List<CallOnMock> eventsForThisMethodWithTheseParameters = events.getEvents(descriptor, parameters);
-
-					parameters = prepareObjectsForCast(parameters);
-					sigResolver.addCall(parameters);
-
-					callNumberForThisMethod += eventsForThisMethodWithTheseParameters.size();
-
-					if (testMockitoEq) {
-						String methodVarName = descriptor.getName() + SUFFIX_ENTER + "_" + methodInputNumber++;
-						// FIXME indexé par MethodParameters pr un truc plus propre (mais étudier le hashcode et equals avant).
-						writeParamsAsObjectArray(methodVarName, eventsForThisMethodWithTheseParameters.get(0).getParameters(),
-								JsonSerialisationUtils.writeSerializedObjectsInJava(eventsForThisMethodWithTheseParameters.get(0).getParameters().getFrozenParametersOnEnter()));
-						// Signature is partially resolved but it's enough to use it here.
-						String[] params = generateParamsFromArray(sigResolver, methodVarName, true);
-						generateStubs(callVar, descriptor, eventsForThisMethodWithTheseParameters, params);
-					} else {
-						allEvents.addAll(eventsForThisMethodWithTheseParameters);
-					}
-				}
-
-				if (!testMockitoEq) {
-					generateStubs(callVar, descriptor, allEvents, generateParamsMockitoAny(sigResolver));
-				}
+				int callNumberForThisMethod = testMockitoEq ? generateMocksWithParameters(mockedObjectVariableName, descriptor, sigResolver) : generateMocksWithAnyParameters(mockedObjectVariableName, descriptor, sigResolver);
 
 				// Check the call number on this method
 				sb.setLength(0);
@@ -311,7 +278,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 					verifyCalledEvent.add("PowerMockito.verifyStatic(Mockito.times(" + callNumberForThisMethod + "));");
 					sb.append(descriptor.getMethodClass().getSimpleName()).append(call).append(";");
 				} else {
-					sb.append("Mockito.verify(").append(callVar).append(", Mockito.times(").append(callNumberForThisMethod).append("))").append(call).append(";");
+					sb.append("Mockito.verify(").append(mockedObjectVariableName).append(", Mockito.times(").append(callNumberForThisMethod).append("))").append(call).append(";");
 				}
 
 				verifyCalledEvent.add(sb.toString());
@@ -319,6 +286,42 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 			testCodeLines.add(EMPTY_LINE);
 		}
 		return verifyCalledEvent;
+	}
+
+	/**
+	 * We have to resolve the signature. We haven't used javassist $sig because sometimes, with generic, we ignore
+	 * the real parameter types when the class is modified by javassist. So we have to deduce the real signature
+	 * ourselves.
+	 */
+	protected SignatureResolver createSignatureResolverForStubbing(MethodDescriptor descriptor) {
+		SignatureResolver sigResolver = new SignatureResolver(descriptor);
+		for (List<Object> parameters : eventMap.getParameters(descriptor)) {
+			parameters = prepareObjectsForCast(parameters);
+			sigResolver.addCall(parameters);
+		}
+		return sigResolver;
+
+	}
+
+	protected int generateMocksWithAnyParameters(String mockedObjectVariableName, MethodDescriptor descriptor, SignatureResolver sigResolver) throws IOException {
+		List<CallOnMock> allEvents = eventMap.getEvents(descriptor);
+		generateStubs(mockedObjectVariableName, descriptor, allEvents, generateParamsMockitoAny(sigResolver));
+		return allEvents.size();
+	}
+
+	protected int generateMocksWithParameters(String mockedObjectVariableName, MethodDescriptor descriptor, SignatureResolver sigResolver) throws IOException {
+		int callNumberForThisMethod = 0;
+		for (List<CallOnMock> eventsByParameters : eventMap.getEventsByParameters(descriptor)) {
+			callNumberForThisMethod += eventsByParameters.size();
+
+			String methodVarName = descriptor.getName() + SUFFIX_ENTER + "_" + methodInputNumber++;
+			// FIXME indexé par MethodParameters pr un truc plus propre (mais étudier le hashcode et equals avant).
+			writeParamsAsObjectArray(methodVarName, eventsByParameters.get(0).getParameters(), JsonSerialisationUtils.writeSerializedObjectsInJava(eventsByParameters.get(0).getParameters().getFrozenParametersOnEnter()));
+			// Signature is partially resolved but it's enough to use it here.
+			String[] params = generateParamsFromArray(sigResolver, methodVarName, true);
+			generateStubs(mockedObjectVariableName, descriptor, eventsByParameters, params);
+		}
+		return callNumberForThisMethod;
 	}
 
 	protected void generateStubs(String mockedClassObject, MethodDescriptor eventMethod, List<CallOnMock> eventsOnThisMethod, String[] params) throws IOException {
@@ -452,7 +455,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 	public void onEventEnd(CallOnMock event) {
 		// We are mono threaded, if this listener is alive, it would receive at least a start before.
 		try {
-			events.put(pendingEvent);
+			eventMap.put(pendingEvent);
 			pendingEvent = null;
 			event.freezeResponse();
 			event.freezeDiffsExit();

@@ -94,4 +94,8 @@ public class TestedClass extends SuperTestedClass {
 		return super.methodFromSuperClassButOverridden(value) * -4;
 	}
 
+	public int getItself(int v) {
+		return v;
+	}
+
 }

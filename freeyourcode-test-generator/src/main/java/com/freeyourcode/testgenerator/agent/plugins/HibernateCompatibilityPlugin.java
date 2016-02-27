@@ -101,13 +101,13 @@ public class HibernateCompatibilityPlugin implements Plugin {
 						// the first object too. So we have to clone the initial object to keep the initial object (broking
 						// the Java reference but we keep a reference to the initial uninitialized proxies to get the real
 						// implementations on stub method exit.
-						events.put(pendingEvent);
+						eventMap.put(pendingEvent);
 						pendingEvent = null;
 
 						HibernateCallOnMock hEvent = (HibernateCallOnMock) event;
 						if (!hEvent.isAlreadyCloned) {
 							try {
-								log.info("onEventEnd on " + event.getDescriptor());
+								// TODO log management properly log.info("onEventEnd on " + event.getDescriptor());
 								hEvent.freezeFindResponseInParams();
 								hEvent.getParameters().setInputParams(getCloner().deepClone(event.getParameters().getInputParams()));
 								hEvent.setResponse(getCloner().deepClone(event.getResponse()));
