@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Primitives;
 
 public class DeepAnalyser {
 
@@ -26,8 +27,8 @@ public class DeepAnalyser {
 		return visitedObject.add(idCode);
 	}
 
-	protected static boolean isBasicType(Class<?> type) {
-		return type.isPrimitive() || String.class == type || Date.class.isAssignableFrom(type);
+	protected static boolean isBasicType(Class<?> type) {// TODO test it, particularly with primitive classes (ex: Double)
+		return Primitives.unwrap(type).isPrimitive() || String.class == type || Date.class.isAssignableFrom(type);
 	}
 
 	/**
