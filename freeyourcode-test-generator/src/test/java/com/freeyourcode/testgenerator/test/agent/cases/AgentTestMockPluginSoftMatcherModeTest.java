@@ -21,7 +21,7 @@ import com.freeyourcode.testgenerator.test.agent.AgentOneTestedClassTest;
  * Same test as AgentTestMockPluginWithFullInjectionTest but we would like to ensure that there won't be a NPE when we are going to execute the generated tests (ensure that injections are managed by Mockito correctly).
  *
  */
-public class AgentTestMockPluginNoEqualityOnStubbing extends AgentOneTestedClassTest {
+public class AgentTestMockPluginSoftMatcherModeTest extends AgentOneTestedClassTest {
 
 	@Override
 	protected Class<?> getTestedClass() {
@@ -30,7 +30,7 @@ public class AgentTestMockPluginNoEqualityOnStubbing extends AgentOneTestedClass
 
 	@BeforeClass
 	public void lancementAgent() {
-		lancementAgent(AgentProperties.CONFIG_FILE_PATH + "=./src/test/java/agentTestMockPluginConfigNoEqualityOnStubbing.xml");
+		lancementAgent(AgentProperties.CONFIG_FILE_PATH + "=./src/test/java/agentTestMockPluginConfigSoftMatcherMode.xml");
 	}
 
 	@BeforeMethod

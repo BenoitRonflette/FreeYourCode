@@ -55,7 +55,13 @@ If you forget to click on "stop killing" sing the server interface before killin
 <ul><b>Main parameters</b>:
 <li><b><i>port</i></b>: the used port to be able to control the Agent (mandatory),</li>
 <li><b><i>autoStart</i></b>: if the agent begins to listen to the code when it starts (optionnal, default false),</li>
-<li><b><i>testEqualityOnStubbing</i></b>: when a method is mocked with Mockito, if the method parameters have to be checked by Mockito with Mockito.eq() (optionnal, default false). Disable this feature if you want more flexible tests, in fact, if a value changes in your code, the mocked method won't be executed properly and the tests should fail farther for another reason, so that will be difficult to know the modified field which doesn't match. Consider false for this property like a "soft" mode and true like an "hard" one. With "soft" mode, the test will fail in the final check indicating the wrong field. If you haven't defined an equals method for all objects in parameters, you cannot use "hard" mode.</li>
+<li><b><i>matcherMode</i></b>: when a method is mocked with Mockito, this property indicates how method arguments must be checked by Mockito.
+Allowed values are :<br/>
+<ul>
+<li><b><i>soft</i></b> (default) disables this Mockito feature. This is useful if you want more flexible and tiny tests. In fact, if a value changes in your code, the mocked method won't be executed properly and the test should fail farther for another reason. So that will be difficult to know which modified field doesn't match.  With "soft" mode, the test will fail in the final check indicating the wrong field.</li>
+<li><b><i>medium</i></b>, if you call a mocked method into an unpredictable iterator (from HashMap, HashSet, etc), you cannot use the soft mode because you have no guarantees about the iterator ordering. So your mocked method execution have to depends on called arguments, however, if you cannot use the hard mode (see below), medium mode will execute a custom argument matcher which checks primitive values only.</li>
+<li><b><i>hard</i></b> uses the Mockito.eq() matcher, however, that can works properly only if you have redefined equals() in each checked object! Moreover, these tests are least flexible (but you can change later the matcher mode in generated tests from hard to medium overriding com.freeyourcode.test.utils.GeneratedTestCase.getMatcherMode()).</li>
+</ul>
 </ul>
 
 <br/>
@@ -73,7 +79,7 @@ If you forget to click on "stop killing" sing the server interface before killin
 </ul>
 <br/>
 
-<pre><code class="html">&lt;agent port="8094" autoStart="true" testEqualityOnStubbing="true"&gt;
+<pre><code class="html">&lt;agent port="8094" autoStart="true" matcherMode="hard"&gt;
 	&lt;logger class="com.freeyourcode.testgenerator.logger.FileTestLogger"  file="/pathTo/GeneratedClassName.java" package="com.freeyourcode.generated"/&gt;
 	&lt;plugins&gt;
 		&lt;!-- add here plugins --&gt;

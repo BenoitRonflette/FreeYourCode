@@ -9,7 +9,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.freeyourcode.testgenerator.agent.constant.AgentProperties;
-import com.freeyourcode.testgenerator.test.ClassCallingClassCallingTestedClassWithFieldInjection;
 import com.freeyourcode.testgenerator.test.ClassCallingTestedClassWithFieldInjection;
 import com.freeyourcode.testgenerator.test.HibernateProxyTestedBean;
 import com.freeyourcode.testgenerator.test.HibernateProxyTestedSubBean;
@@ -19,19 +18,19 @@ import com.freeyourcode.testgenerator.test.TestedSubBean;
 import com.freeyourcode.testgenerator.test.agent.AgentOneTestedClassTest;
 
 /**
- * Test the Integration test generation.
+ * Same test as AgentTestMockPluginWithFullInjectionTest but we would like to ensure that there won't be a NPE when we are going to execute the generated tests (ensure that injections are managed by Mockito correctly).
  *
  */
-public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
+public class AgentTestMockPluginMediumMatcherModeTest extends AgentOneTestedClassTest {
 
 	@Override
 	protected Class<?> getTestedClass() {
-		return ClassCallingClassCallingTestedClassWithFieldInjection.class;
+		return ClassCallingTestedClassWithFieldInjection.class;
 	}
 
 	@BeforeClass
 	public void lancementAgent() {
-		lancementAgent(AgentProperties.CONFIG_FILE_PATH + "=./src/test/java/agentTestSpyPluginConfig.xml");
+		lancementAgent(AgentProperties.CONFIG_FILE_PATH + "=./src/test/java/agentTestMockPluginConfigMediumMatcherMode.xml");
 	}
 
 	@BeforeMethod
@@ -43,16 +42,10 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 	protected <T> T createNewInstanceOfTestedClass(Class<T> cls) throws Exception {
 		T instance = super.createNewInstanceOfTestedClass(cls);
 		// we simulate an injection by any framework
-		Field field = cls.getDeclaredField("classCallingTestedClassWithFieldInjection");
+		Field field = cls.getDeclaredField("testedClass");
 		field.setAccessible(true);
-		Object spiedClass = loadClass(ClassCallingTestedClassWithFieldInjection.class).newInstance();
-		field.set(instance, spiedClass);
+		field.set(instance, loadClass(TestedClass.class).newInstance());
 		field.setAccessible(false);
-
-		Field field2 = spiedClass.getClass().getDeclaredField("testedClass");
-		field2.setAccessible(true);
-		field2.set(spiedClass, loadClass(TestedClass.class).newInstance());
-		field2.setAccessible(false);
 		return instance;
 	}
 
@@ -61,7 +54,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 
 		invokeMethod("myMethodNoParamNoResult");
 		assertTestIs("@Test" + "public void testmyMethodNoParamNoResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Mockito.doNothing().when(testedClassStub).myMethodNoParamNoResult();" + "" + "//Call to tested method"
-				+ "classCallingClassCallingTestedClassWithFieldInjection.myMethodNoParamNoResult();" + "" + "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodNoParamNoResult();" + "}");
+				+ "classCallingTestedClassWithFieldInjection.myMethodNoParamNoResult();" + "" + "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodNoParamNoResult();" + "}");
 
 	}
 
@@ -70,7 +63,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 
 		invokeMethod("myMethodNoParamResult");
 		assertTestIs("@Test" + "public void testmyMethodNoParamResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":2.0}\");"
-				+ "Mockito.when(testedClassStub.myMethodNoParamResult()).thenReturn((Double)response0);" + "" + "//Call to tested method" + "Object testedMethodResult = classCallingClassCallingTestedClassWithFieldInjection.myMethodNoParamResult();"
+				+ "Mockito.when(testedClassStub.myMethodNoParamResult()).thenReturn((Double)response0);" + "" + "//Call to tested method" + "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethodNoParamResult();"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":2.0}\"), testedMethodResult);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodNoParamResult();" + "}");
 	}
@@ -81,7 +74,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 		invokeMethod("myMethodNoParamResultPrimitif");
 		assertTestIs("@Test" + "public void testmyMethodNoParamResultPrimitif_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods"
 				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":2.0}\");" + "Mockito.when(testedClassStub.myMethodNoParamResultPrimitif()).thenReturn((Double)response0);" + ""
-				+ "//Call to tested method" + "Object testedMethodResult = classCallingClassCallingTestedClassWithFieldInjection.myMethodNoParamResultPrimitif();"
+				+ "//Call to tested method" + "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethodNoParamResultPrimitif();"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":2.0}\"), testedMethodResult);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodNoParamResultPrimitif();" + "}");
 	}
@@ -94,9 +87,8 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "Object[] myMethod1ParamNoResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":17.14}\")};" + "Object[] myMethod1ParamNoResult_diffsOnExit_1 = new Object[]{null};"
 				+ "Mockito.doAnswer(exitAnswer(myMethod1ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod1ParamNoResult(argEq((Double)myMethod1ParamNoResult_enter_0[0]));" + "" + "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":17.14}\")};"
-				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":17.14}\")};"
-				+ "classCallingClassCallingTestedClassWithFieldInjection.myMethod1ParamNoResult((Double)inputParams_enter[0]);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
-				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod1ParamNoResult((Double)Mockito.any());" + "}");
+				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":17.14}\")};" + "classCallingTestedClassWithFieldInjection.myMethod1ParamNoResult((Double)inputParams_enter[0]);"
+				+ "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod1ParamNoResult((Double)Mockito.any());" + "}");
 	}
 
 	@Test
@@ -104,9 +96,8 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 
 		invokeMethod("myMethod1ParamNoResult", new Object[] { null });
 		assertTestIs("@Test" + "public void testmyMethod1ParamNoResult_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "Object[] myMethod1ParamNoResult_enter_0 = new Object[]{null};"
-				+ "Object[] myMethod1ParamNoResult_diffsOnExit_1 = new Object[]{null};"
-				+ "Mockito.doAnswer(exitAnswer(myMethod1ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod1ParamNoResult(argEq((Double)myMethod1ParamNoResult_enter_0[0]));" + "" + "//Call to tested method"
-				+ "Object[] inputParams_enter = new Object[]{null};" + "Object[] inputParams_exit = new Object[]{null};" + "classCallingClassCallingTestedClassWithFieldInjection.myMethod1ParamNoResult((Double)inputParams_enter[0]);"
+				+ "Object[] myMethod1ParamNoResult_diffsOnExit_1 = new Object[]{null};" + "Mockito.doAnswer(exitAnswer(myMethod1ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod1ParamNoResult(argEq((Double)myMethod1ParamNoResult_enter_0[0]));"
+				+ "" + "//Call to tested method" + "Object[] inputParams_enter = new Object[]{null};" + "Object[] inputParams_exit = new Object[]{null};" + "classCallingTestedClassWithFieldInjection.myMethod1ParamNoResult((Double)inputParams_enter[0]);"
 				+ "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod1ParamNoResult((Double)Mockito.any());" + "}");
 	}
 
@@ -120,7 +111,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "Mockito.when(testedClassStub.myMethod1ParamResult(argEq((Double)myMethod1ParamResult_enter_0[0]))).then(exitAnswer(myMethod1ParamResult_diffsOnExit_1, response0));" + "" + "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":9.0}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":9.0}\")};"
-				+ "Object testedMethodResult = classCallingClassCallingTestedClassWithFieldInjection.myMethod1ParamResult((Double)inputParams_enter[0]);"
+				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethod1ParamResult((Double)inputParams_enter[0]);"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":18.0}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod1ParamResult((Double)Mockito.any());" + "}");
 	}
@@ -142,7 +133,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "//Mock the stub methods"
 				+ "Object[] myMethod1ParamResult_enter_0 = new Object[]{null};"
 				+ "Mockito.when(testedClassStub.myMethod1ParamResult(argEq((Double)myMethod1ParamResult_enter_0[0]))).thenThrow((Throwable)JsonSerialisationUtils.deserialize(\"{\\\"@id\\\":1,\\\"@type\\\":\\\"java.lang.NullPointerException\\\",\\\"cause\\\":{\\\"@ref\\\":1},\\\"stackTrace\\\":[],\\\"suppressedExceptions\\\":{\\\"@type\\\":\\\"java.util.Collections$UnmodifiableRandomAccessList\\\"}}\"));"
-				+ "" + "//Call to tested method" + "Object[] inputParams_enter = new Object[]{null};" + "classCallingClassCallingTestedClassWithFieldInjection.myMethod1ParamResult((Double)inputParams_enter[0]);" + "}");
+				+ "" + "//Call to tested method" + "Object[] inputParams_enter = new Object[]{null};" + "classCallingTestedClassWithFieldInjection.myMethod1ParamResult((Double)inputParams_enter[0]);" + "}");
 	}
 
 	@Test
@@ -155,7 +146,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "Mockito.when(testedClassStub.myMethod1ParamPrimitifResultPrimitif(argEq((Double)myMethod1ParamPrimitifResultPrimitif_enter_0[0]))).then(exitAnswer(myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1, response0));" + ""
 				+ "//Call to tested method" + "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":4.0003}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":4.0003}\")};"
-				+ "Object testedMethodResult = classCallingClassCallingTestedClassWithFieldInjection.myMethod1ParamPrimitifResultPrimitif((Double)inputParams_enter[0]);"
+				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethod1ParamPrimitifResultPrimitif((Double)inputParams_enter[0]);"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0006}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod1ParamPrimitifResultPrimitif(Mockito.anyDouble());" + "}");
 	}
@@ -170,7 +161,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "Mockito.when(testedClassStub.myMethod1ParamPrimitifResultPrimitif(argEq((Double)myMethod1ParamPrimitifResultPrimitif_enter_0[0]))).then(exitAnswer(myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1, response0));" + ""
 				+ "//Call to tested method" + "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\"}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\"}\")};"
-				+ "Object testedMethodResult = classCallingClassCallingTestedClassWithFieldInjection.myMethod1ParamPrimitifResultPrimitif((Double)inputParams_enter[0]);"
+				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethod1ParamPrimitifResultPrimitif((Double)inputParams_enter[0]);"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\"}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod1ParamPrimitifResultPrimitif(Mockito.anyDouble());" + "}");
 	}
@@ -191,7 +182,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\"}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\"}\")};"
-				+ "classCallingClassCallingTestedClassWithFieldInjection.myMethod2ParamNoResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
+				+ "classCallingTestedClassWithFieldInjection.myMethod2ParamNoResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
 				+ "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod2ParamNoResult((Double)Mockito.any(), (TestedBean)Mockito.any());" + "}");
 	}
 
@@ -211,7 +202,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\"}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\"}\")};"
-				+ "classCallingClassCallingTestedClassWithFieldInjection.myMethod2ParamNoResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
+				+ "classCallingTestedClassWithFieldInjection.myMethod2ParamNoResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
 				+ "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod2ParamNoResult((Double)Mockito.any(), (TestedBean)Mockito.any());" + "}");
 	}
 
@@ -231,7 +222,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"valueObject\\\":0}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"valueObject\\\":0}\")};"
-				+ "classCallingClassCallingTestedClassWithFieldInjection.myMethod2ParamNoResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
+				+ "classCallingTestedClassWithFieldInjection.myMethod2ParamNoResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
 				+ "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod2ParamNoResult((Double)Mockito.any(), (TestedBean)Mockito.any());" + "}");
 	}
 
@@ -251,7 +242,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"lib\\\",\\\"value\\\":1,\\\"valueObject\\\":2}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"lib\\\",\\\"value\\\":1,\\\"valueObject\\\":2}\")};"
-				+ "classCallingClassCallingTestedClassWithFieldInjection.myMethod2ParamNoResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
+				+ "classCallingTestedClassWithFieldInjection.myMethod2ParamNoResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
 				+ "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod2ParamNoResult((Double)Mockito.any(), (TestedBean)Mockito.any());" + "}");
 	}
 
@@ -264,7 +255,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(argEq((Double)myMethod2ParamNoResult_enter_0[0]), argEq((TestedBean)myMethod2ParamNoResult_enter_0[1]));" + ""
 				+ "//Call to tested method" + "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), null};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), null};"
-				+ "classCallingClassCallingTestedClassWithFieldInjection.myMethod2ParamNoResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
+				+ "classCallingTestedClassWithFieldInjection.myMethod2ParamNoResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
 				+ "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod2ParamNoResult((Double)Mockito.any(), (TestedBean)Mockito.any());" + "}");
 	}
 
@@ -285,7 +276,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"coucou\\\",\\\"value\\\":7,\\\"valueObject\\\":8}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"coucou\\\",\\\"value\\\":7,\\\"valueObject\\\":8}\")};"
-				+ "Object testedMethodResult = classCallingClassCallingTestedClassWithFieldInjection.myMethod2ParamResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
+				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethod2ParamResult((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":90.4}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod2ParamResult((Double)Mockito.any(), (TestedBean)Mockito.any());" + "}");
 	}
@@ -304,7 +295,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"coucou\\\",\\\"value\\\":7,\\\"valueObject\\\":8}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"coucou\\\",\\\"value\\\":7,\\\"valueObject\\\":8}\")};"
-				+ "Object testedMethodResult = classCallingClassCallingTestedClassWithFieldInjection.myMethod2ParamPrimitifResultPrimitif((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
+				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethod2ParamPrimitifResultPrimitif((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":90.4}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod2ParamPrimitifResultPrimitif(Mockito.anyDouble(), (TestedBean)Mockito.any());" + "}");
 	}
@@ -337,7 +328,7 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 				+ "//Call to tested method"
 				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"coucou\\\",\\\"value\\\":7,\\\"valueObject\\\":8,\\\"subBean\\\":{\\\"value2\\\":\\\"test\\\"}}\")};"
 				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"coucou\\\",\\\"value\\\":7,\\\"valueObject\\\":8,\\\"subBean\\\":{\\\"value2\\\":\\\"test\\\"}}\")};"
-				+ "Object testedMethodResult = classCallingClassCallingTestedClassWithFieldInjection.myMethod2ParamPrimitifResultPrimitif((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
+				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethod2ParamPrimitifResultPrimitif((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
 				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":90.4}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
 				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethod2ParamPrimitifResultPrimitif(Mockito.anyDouble(), (TestedBean)Mockito.any());" + "}");
 	}
@@ -364,6 +355,90 @@ public class AgentTestSpyPluginTest extends AgentOneTestedClassTest {
 		HibernateProxyTestedBean hibernateProxyObject = new HibernateProxyTestedBean(new TestedBean("coucou", 7, 8, hibernateProxySubObject));
 		invokeMethod("myMethod2ParamPrimitifResultPrimitif", 45.2d, hibernateProxyObject);
 		assertTestMyMethod2ParamPrimitifResultPrimitif_withSubBeanRenseignee();
+	}
+
+	@Test
+	public void testCallToStaticMethod() throws Exception {
+		invokeMethod("myStaticMethod", 45.2d);
+		assertTestIs("@Test" + "public void testmyStaticMethod_" + nextTestId() + "() throws Exception {" + "//Mock the stub methods" + "PowerMockito.mockStatic(TestedClass.class);"
+				+ "Object[] myStaticMethod_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\")};" + "Object[] myStaticMethod_diffsOnExit_1 = new Object[]{null};"
+				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":135.60000000000002}\");"
+				+ "Mockito.when(TestedClass.myStaticMethod(argEq((Double)myStaticMethod_enter_0[0]))).then(exitAnswer(myStaticMethod_diffsOnExit_1, response0));" +
+
+				"//Call to tested method" + "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\")};"
+				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":45.2}\")};"
+				+ "Object testedMethodResult = ClassCallingTestedClassWithFieldInjection.myStaticMethod((Double)inputParams_enter[0]);"
+				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":135.60000000000002}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" +
+
+				"//Check the number of calls to stub methods" + "PowerMockito.verifyStatic(Mockito.times(1));" + "TestedClass.myStaticMethod((Double)Mockito.any());" + "}");
+
+	}
+
+	@Test
+	public void testMyMethodIsModifyingInput() throws Exception {
+		TestedBean bean = new TestedBean("l1", 1, 2, new TestedSubBean("v2"));
+		invokeMethod("getModifiedValue2FromMyMethodIsModifyingInput", 8d, bean);
+		assertTestIs("@Test"
+				+ "public void testgetModifiedValue2FromMyMethodIsModifyingInput_"
+				+ nextTestId()
+				+ "() throws Exception {"
+				+ "//Mock the stub methods"
+				+ "Object[] myMethodIsModifyingInput_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
+				+ "Object[] myMethodIsModifyingInput_diffsOnExit_1 = new Object[]{null, JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"java.util.HashMap\\\",\\\"libelle\\\":\\\"NewLibelle\\\",\\\"subBean.value2\\\":\\\"NewValueOnSubBean\\\"}\")};"
+				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.test.utils.InputPointerResolver\\\",\\\"pathToInput\\\":\\\"1.subBean.value2\\\"}\");"
+				+ "Mockito.when(testedClassStub.myMethodIsModifyingInput(argEq((Double)myMethodIsModifyingInput_enter_0[0]), argEq((TestedBean)myMethodIsModifyingInput_enter_0[1]))).then(exitAnswer(myMethodIsModifyingInput_diffsOnExit_1, response0));"
+				+ ""
+				+ "//Call to tested method"
+				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
+				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"NewLibelle\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"NewValueOnSubBean\\\"}}\")};"
+				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.getModifiedValue2FromMyMethodIsModifyingInput((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
+				+ "assertEquals(JsonSerialisationUtils.deserialize(\"\\\"NewValueOnSubBean\\\"\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
+				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodIsModifyingInput(Mockito.anyDouble(), (TestedBean)Mockito.any());" + "}");
+	}
+
+	@Test
+	public void testMyMethodIsReturningSubBean() throws Exception {
+		// com.freeyourcode.testgenerator.agent.plugins.HibernateCompatibilityPlugin permits to test the MockOnCall freezes on response/exit which are performed after clonning the objects (but deep finding is performed beforecloning !!)
+		TestedBean bean = new TestedBean("l1", 1, 2, new TestedSubBean("v2"));
+		invokeMethod("myMethodIsReturningSubBean", 8d, bean);
+		assertTestIs("@Test"
+				+ "public void testmyMethodIsReturningSubBean_"
+				+ nextTestId()
+				+ "() throws Exception {"
+				+ "//Mock the stub methods"
+				+ "Object[] myMethodIsReturningSubBean_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
+				+ "Object[] myMethodIsReturningSubBean_diffsOnExit_1 = new Object[]{null, null};"
+				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.test.utils.InputPointerResolver\\\",\\\"pathToInput\\\":\\\"1.subBean\\\"}\");"
+				+ "Mockito.when(testedClassStub.myMethodIsReturningSubBean(argEq((Double)myMethodIsReturningSubBean_enter_0[0]), argEq((TestedBean)myMethodIsReturningSubBean_enter_0[1]))).then(exitAnswer(myMethodIsReturningSubBean_diffsOnExit_1, response0));"
+				+ ""
+				+ "//Call to tested method"
+				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
+				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
+				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethodIsReturningSubBean((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
+				+ "assertEquals(JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedSubBean\\\",\\\"value2\\\":\\\"v2\\\"}\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + ""
+				+ "//Check the number of calls to stub methods" + "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodIsReturningSubBean(Mockito.anyDouble(), (TestedBean)Mockito.any());" + "}");
+	}
+
+	@Test
+	public void testMyMethodIsReturningSubBeanValue() throws Exception {
+		TestedBean bean = new TestedBean("l1", 1, 2, new TestedSubBean("v2"));
+		invokeMethod("myMethodIsReturningSubBeanValue", 8d, bean);
+		assertTestIs("@Test"
+				+ "public void testmyMethodIsReturningSubBeanValue_"
+				+ nextTestId()
+				+ "() throws Exception {"
+				+ "//Mock the stub methods"
+				+ "Object[] myMethodIsReturningSubBeanValue_enter_0 = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
+				+ "Object[] myMethodIsReturningSubBeanValue_diffsOnExit_1 = new Object[]{null, null};"
+				+ "Object response0 = JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.test.utils.InputPointerResolver\\\",\\\"pathToInput\\\":\\\"1.subBean.value2\\\"}\");"
+				+ "Mockito.when(testedClassStub.myMethodIsReturningSubBeanValue(argEq((Double)myMethodIsReturningSubBeanValue_enter_0[0]), argEq((TestedBean)myMethodIsReturningSubBeanValue_enter_0[1]))).then(exitAnswer(myMethodIsReturningSubBeanValue_diffsOnExit_1, response0));"
+				+ ""
+				+ "//Call to tested method"
+				+ "Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
+				+ "Object[] inputParams_exit = new Object[]{JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"double\\\",\\\"value\\\":8.0}\"), JsonSerialisationUtils.deserialize(\"{\\\"@type\\\":\\\"com.freeyourcode.testgenerator.test.TestedBean\\\",\\\"libelle\\\":\\\"l1\\\",\\\"value\\\":1,\\\"valueObject\\\":2,\\\"subBean\\\":{\\\"value2\\\":\\\"v2\\\"}}\")};"
+				+ "Object testedMethodResult = classCallingTestedClassWithFieldInjection.myMethodIsReturningSubBeanValue((Double)inputParams_enter[0], (TestedBean)inputParams_enter[1]);"
+				+ "assertEquals(JsonSerialisationUtils.deserialize(\"\\\"v2\\\"\"), testedMethodResult);" + "assertEquals(inputParams_exit, inputParams_enter);" + "" + "//Check the number of calls to stub methods"
+				+ "Mockito.verify(testedClassStub, Mockito.times(1)).myMethodIsReturningSubBeanValue(Mockito.anyDouble(), (TestedBean)Mockito.any());" + "}");
 	}
 
 }

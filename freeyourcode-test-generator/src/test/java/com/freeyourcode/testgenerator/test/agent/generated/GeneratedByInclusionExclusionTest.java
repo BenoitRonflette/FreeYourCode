@@ -8,6 +8,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.annotations.Test;
 
+import com.freeyourcode.test.utils.MatcherMode;
 import com.freeyourcode.test.utils.GeneratedTestCase;
 import com.freeyourcode.prettyjson.JsonSerialisationUtils;
 import com.freeyourcode.testgenerator.test.TestedBean;

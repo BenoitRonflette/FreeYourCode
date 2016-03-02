@@ -8,6 +8,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.annotations.Test;
 
+import com.freeyourcode.test.utils.MatcherMode;
 import com.freeyourcode.test.utils.GeneratedTestCase;
 import com.freeyourcode.prettyjson.JsonSerialisationUtils;
 import com.freeyourcode.testgenerator.test.TestedClass;
@@ -31,13 +32,18 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		return true;
 	}
 
+	@Override
+	protected MatcherMode getMatcherMode() {
+		return MatcherMode.HARD;
+	}
+
 	@Test
 	public void testmyMethod2ParamPrimitifResultPrimitif_0() throws Exception {
 		//Mock the stub methods
 		Object[] myMethod2ParamPrimitifResultPrimitif_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8,\"subBean\":{\"value2\":\"test\"}}")};
 		Object[] myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1 = new Object[]{null, null};
 		Object response0 = JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":90.4}");
-		Mockito.when(testedClassStub.myMethod2ParamPrimitifResultPrimitif(Mockito.eq((Double)myMethod2ParamPrimitifResultPrimitif_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamPrimitifResultPrimitif_enter_0[1]))).then(exitAnswer(myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
+		Mockito.when(testedClassStub.myMethod2ParamPrimitifResultPrimitif(argEq((Double)myMethod2ParamPrimitifResultPrimitif_enter_0[0]), argEq((TestedBean)myMethod2ParamPrimitifResultPrimitif_enter_0[1]))).then(exitAnswer(myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8,\"subBean\":{\"value2\":\"test\"}}")};
@@ -56,7 +62,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		Object[] myMethod2ParamPrimitifResultPrimitif_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8}")};
 		Object[] myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1 = new Object[]{null, null};
 		Object response0 = JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":90.4}");
-		Mockito.when(testedClassStub.myMethod2ParamPrimitifResultPrimitif(Mockito.eq((Double)myMethod2ParamPrimitifResultPrimitif_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamPrimitifResultPrimitif_enter_0[1]))).then(exitAnswer(myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
+		Mockito.when(testedClassStub.myMethod2ParamPrimitifResultPrimitif(argEq((Double)myMethod2ParamPrimitifResultPrimitif_enter_0[0]), argEq((TestedBean)myMethod2ParamPrimitifResultPrimitif_enter_0[1]))).then(exitAnswer(myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8}")};
@@ -75,7 +81,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		Object[] myMethod2ParamPrimitifResultPrimitif_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8,\"subBean\":{\"value2\":\"test\"}}")};
 		Object[] myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1 = new Object[]{null, null};
 		Object response0 = JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":90.4}");
-		Mockito.when(testedClassStub.myMethod2ParamPrimitifResultPrimitif(Mockito.eq((Double)myMethod2ParamPrimitifResultPrimitif_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamPrimitifResultPrimitif_enter_0[1]))).then(exitAnswer(myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
+		Mockito.when(testedClassStub.myMethod2ParamPrimitifResultPrimitif(argEq((Double)myMethod2ParamPrimitifResultPrimitif_enter_0[0]), argEq((TestedBean)myMethod2ParamPrimitifResultPrimitif_enter_0[1]))).then(exitAnswer(myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8,\"subBean\":{\"value2\":\"test\"}}")};
@@ -93,7 +99,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		//Mock the stub methods
 		Object[] myMethod1ParamNoResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":17.14}")};
 		Object[] myMethod1ParamNoResult_diffsOnExit_1 = new Object[]{null};
-		Mockito.doAnswer(exitAnswer(myMethod1ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod1ParamNoResult(Mockito.eq((Double)myMethod1ParamNoResult_enter_0[0]));
+		Mockito.doAnswer(exitAnswer(myMethod1ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod1ParamNoResult(argEq((Double)myMethod1ParamNoResult_enter_0[0]));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":17.14}")};
@@ -110,7 +116,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		//Mock the stub methods
 		Object[] myMethod1ParamNoResult_enter_0 = new Object[]{null};
 		Object[] myMethod1ParamNoResult_diffsOnExit_1 = new Object[]{null};
-		Mockito.doAnswer(exitAnswer(myMethod1ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod1ParamNoResult(Mockito.eq((Double)myMethod1ParamNoResult_enter_0[0]));
+		Mockito.doAnswer(exitAnswer(myMethod1ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod1ParamNoResult(argEq((Double)myMethod1ParamNoResult_enter_0[0]));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{null};
@@ -128,7 +134,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		Object[] myMethod1ParamPrimitifResultPrimitif_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":4.0003}")};
 		Object[] myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1 = new Object[]{null};
 		Object response0 = JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0006}");
-		Mockito.when(testedClassStub.myMethod1ParamPrimitifResultPrimitif(Mockito.eq((Double)myMethod1ParamPrimitifResultPrimitif_enter_0[0]))).then(exitAnswer(myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
+		Mockito.when(testedClassStub.myMethod1ParamPrimitifResultPrimitif(argEq((Double)myMethod1ParamPrimitifResultPrimitif_enter_0[0]))).then(exitAnswer(myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":4.0003}")};
@@ -147,7 +153,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		Object[] myMethod1ParamPrimitifResultPrimitif_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\"}")};
 		Object[] myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1 = new Object[]{null};
 		Object response0 = JsonSerialisationUtils.deserialize("{\"@type\":\"double\"}");
-		Mockito.when(testedClassStub.myMethod1ParamPrimitifResultPrimitif(Mockito.eq((Double)myMethod1ParamPrimitifResultPrimitif_enter_0[0]))).then(exitAnswer(myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
+		Mockito.when(testedClassStub.myMethod1ParamPrimitifResultPrimitif(argEq((Double)myMethod1ParamPrimitifResultPrimitif_enter_0[0]))).then(exitAnswer(myMethod1ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\"}")};
@@ -166,7 +172,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		Object[] myMethod1ParamResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":9.0}")};
 		Object[] myMethod1ParamResult_diffsOnExit_1 = new Object[]{null};
 		Object response0 = JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":18.0}");
-		Mockito.when(testedClassStub.myMethod1ParamResult(Mockito.eq((Double)myMethod1ParamResult_enter_0[0]))).then(exitAnswer(myMethod1ParamResult_diffsOnExit_1, response0));
+		Mockito.when(testedClassStub.myMethod1ParamResult(argEq((Double)myMethod1ParamResult_enter_0[0]))).then(exitAnswer(myMethod1ParamResult_diffsOnExit_1, response0));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":9.0}")};
@@ -183,7 +189,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 	public void testmyMethod1ParamResult_8() throws Exception {
 		//Mock the stub methods
 		Object[] myMethod1ParamResult_enter_0 = new Object[]{null};
-		Mockito.when(testedClassStub.myMethod1ParamResult(Mockito.eq((Double)myMethod1ParamResult_enter_0[0]))).thenThrow((Throwable)JsonSerialisationUtils.deserialize("{\"@id\":1,\"@type\":\"java.lang.NullPointerException\",\"cause\":{\"@ref\":1},\"stackTrace\":[],\"suppressedExceptions\":{\"@type\":\"java.util.Collections$UnmodifiableRandomAccessList\"}}"));
+		Mockito.when(testedClassStub.myMethod1ParamResult(argEq((Double)myMethod1ParamResult_enter_0[0]))).thenThrow((Throwable)JsonSerialisationUtils.deserialize("{\"@id\":1,\"@type\":\"java.lang.NullPointerException\",\"cause\":{\"@ref\":1},\"stackTrace\":[],\"suppressedExceptions\":{\"@type\":\"java.util.Collections$UnmodifiableRandomAccessList\"}}"));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{null};
@@ -195,7 +201,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		//Mock the stub methods
 		Object[] myMethod2ParamNoResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"lib\",\"value\":1,\"valueObject\":2}")};
 		Object[] myMethod2ParamNoResult_diffsOnExit_1 = new Object[]{null, null};
-		Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(Mockito.eq((Double)myMethod2ParamNoResult_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamNoResult_enter_0[1]));
+		Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(argEq((Double)myMethod2ParamNoResult_enter_0[0]), argEq((TestedBean)myMethod2ParamNoResult_enter_0[1]));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"lib\",\"value\":1,\"valueObject\":2}")};
@@ -212,7 +218,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		//Mock the stub methods
 		Object[] myMethod2ParamNoResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0}"), null};
 		Object[] myMethod2ParamNoResult_diffsOnExit_1 = new Object[]{null, null};
-		Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(Mockito.eq((Double)myMethod2ParamNoResult_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamNoResult_enter_0[1]));
+		Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(argEq((Double)myMethod2ParamNoResult_enter_0[0]), argEq((TestedBean)myMethod2ParamNoResult_enter_0[1]));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0}"), null};
@@ -229,7 +235,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		//Mock the stub methods
 		Object[] myMethod2ParamNoResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"valueObject\":0}")};
 		Object[] myMethod2ParamNoResult_diffsOnExit_1 = new Object[]{null, null};
-		Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(Mockito.eq((Double)myMethod2ParamNoResult_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamNoResult_enter_0[1]));
+		Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(argEq((Double)myMethod2ParamNoResult_enter_0[0]), argEq((TestedBean)myMethod2ParamNoResult_enter_0[1]));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"valueObject\":0}")};
@@ -246,7 +252,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		//Mock the stub methods
 		Object[] myMethod2ParamNoResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\"}")};
 		Object[] myMethod2ParamNoResult_diffsOnExit_1 = new Object[]{null, null};
-		Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(Mockito.eq((Double)myMethod2ParamNoResult_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamNoResult_enter_0[1]));
+		Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(argEq((Double)myMethod2ParamNoResult_enter_0[0]), argEq((TestedBean)myMethod2ParamNoResult_enter_0[1]));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\"}")};
@@ -263,7 +269,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		//Mock the stub methods
 		Object[] myMethod2ParamNoResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\"}")};
 		Object[] myMethod2ParamNoResult_diffsOnExit_1 = new Object[]{null, null};
-		Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(Mockito.eq((Double)myMethod2ParamNoResult_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamNoResult_enter_0[1]));
+		Mockito.doAnswer(exitAnswer(myMethod2ParamNoResult_diffsOnExit_1)).when(testedClassStub).myMethod2ParamNoResult(argEq((Double)myMethod2ParamNoResult_enter_0[0]), argEq((TestedBean)myMethod2ParamNoResult_enter_0[1]));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":8.0}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\"}")};
@@ -281,7 +287,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		Object[] myMethod2ParamPrimitifResultPrimitif_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8}")};
 		Object[] myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1 = new Object[]{null, null};
 		Object response0 = JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":90.4}");
-		Mockito.when(testedClassStub.myMethod2ParamPrimitifResultPrimitif(Mockito.eq((Double)myMethod2ParamPrimitifResultPrimitif_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamPrimitifResultPrimitif_enter_0[1]))).then(exitAnswer(myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
+		Mockito.when(testedClassStub.myMethod2ParamPrimitifResultPrimitif(argEq((Double)myMethod2ParamPrimitifResultPrimitif_enter_0[0]), argEq((TestedBean)myMethod2ParamPrimitifResultPrimitif_enter_0[1]))).then(exitAnswer(myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8}")};
@@ -300,7 +306,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		Object[] myMethod2ParamPrimitifResultPrimitif_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8,\"subBean\":{\"value2\":\"test\"}}")};
 		Object[] myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1 = new Object[]{null, null};
 		Object response0 = JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":90.4}");
-		Mockito.when(testedClassStub.myMethod2ParamPrimitifResultPrimitif(Mockito.eq((Double)myMethod2ParamPrimitifResultPrimitif_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamPrimitifResultPrimitif_enter_0[1]))).then(exitAnswer(myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
+		Mockito.when(testedClassStub.myMethod2ParamPrimitifResultPrimitif(argEq((Double)myMethod2ParamPrimitifResultPrimitif_enter_0[0]), argEq((TestedBean)myMethod2ParamPrimitifResultPrimitif_enter_0[1]))).then(exitAnswer(myMethod2ParamPrimitifResultPrimitif_diffsOnExit_1, response0));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8,\"subBean\":{\"value2\":\"test\"}}")};
@@ -319,7 +325,7 @@ public class GeneratedByAgentTestMockPluginWithFullInjectionTest extends Generat
 		Object[] myMethod2ParamResult_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8}")};
 		Object[] myMethod2ParamResult_diffsOnExit_1 = new Object[]{null, null};
 		Object response0 = JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":90.4}");
-		Mockito.when(testedClassStub.myMethod2ParamResult(Mockito.eq((Double)myMethod2ParamResult_enter_0[0]), Mockito.eq((TestedBean)myMethod2ParamResult_enter_0[1]))).then(exitAnswer(myMethod2ParamResult_diffsOnExit_1, response0));
+		Mockito.when(testedClassStub.myMethod2ParamResult(argEq((Double)myMethod2ParamResult_enter_0[0]), argEq((TestedBean)myMethod2ParamResult_enter_0[1]))).then(exitAnswer(myMethod2ParamResult_diffsOnExit_1, response0));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":45.2}"), JsonSerialisationUtils.deserialize("{\"@type\":\"com.freeyourcode.testgenerator.test.TestedBean\",\"libelle\":\"coucou\",\"value\":7,\"valueObject\":8}")};

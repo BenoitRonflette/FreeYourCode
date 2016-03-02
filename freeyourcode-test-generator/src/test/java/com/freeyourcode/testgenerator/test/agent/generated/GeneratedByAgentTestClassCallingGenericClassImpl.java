@@ -8,6 +8,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.annotations.Test;
 
+import com.freeyourcode.test.utils.MatcherMode;
 import com.freeyourcode.test.utils.GeneratedTestCase;
 import com.freeyourcode.prettyjson.JsonSerialisationUtils;
 import com.freeyourcode.testgenerator.test.GenericClassImpl;
@@ -25,12 +26,17 @@ public class GeneratedByAgentTestClassCallingGenericClassImpl extends GeneratedT
 	@InjectMocks
 	private ClassCallingGenericClassImpl classCallingGenericClassImpl;
 
+	@Override
+	protected MatcherMode getMatcherMode() {
+		return MatcherMode.HARD;
+	}
+
 	@Test
 	public void testabstractCompute_0() throws Exception {
 		//Mock the stub methods
 		Object[] abstractCompute_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":7.0}")};
 		Object[] abstractCompute_diffsOnExit_1 = new Object[]{null};
-		Mockito.doAnswer(exitAnswer(abstractCompute_diffsOnExit_1)).when(genericClassImplStub).abstractCompute(Mockito.eq((Double)abstractCompute_enter_0[0]));
+		Mockito.doAnswer(exitAnswer(abstractCompute_diffsOnExit_1)).when(genericClassImplStub).abstractCompute(argEq((Double)abstractCompute_enter_0[0]));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":7.0}")};
@@ -61,7 +67,7 @@ public class GeneratedByAgentTestClassCallingGenericClassImpl extends GeneratedT
 		//Mock the stub methods
 		Object[] compute_enter_0 = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":7.0}")};
 		Object[] compute_diffsOnExit_1 = new Object[]{null};
-		Mockito.doAnswer(exitAnswer(compute_diffsOnExit_1)).when(genericClassImplStub).compute(Mockito.eq((Double)compute_enter_0[0]));
+		Mockito.doAnswer(exitAnswer(compute_diffsOnExit_1)).when(genericClassImplStub).compute(argEq((Double)compute_enter_0[0]));
 		
 		//Call to tested method
 		Object[] inputParams_enter = new Object[]{JsonSerialisationUtils.deserialize("{\"@type\":\"double\",\"value\":7.0}")};

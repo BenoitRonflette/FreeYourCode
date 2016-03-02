@@ -47,7 +47,6 @@ public class AgentClassFileTransformer implements ClassFileTransformer {
 		server.registerListener(logger);
 		server.registerListener(manager);
 		server.registerUpdatableProperties("Output file", logger.getProperties());
-		server.registerUpdatableProperties("Test", config.getProps());
 
 		// FIXME: a etudier Pr le $sig, on charge les classes depuis un context loader, sinon elles ne seront pas trouvées dans le classpath.
 		Desc.useContextClassLoader = true;

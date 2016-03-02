@@ -8,6 +8,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testng.annotations.Test;
 
+import com.freeyourcode.test.utils.MatcherMode;
 import com.freeyourcode.test.utils.GeneratedTestCase;
 import com.freeyourcode.prettyjson.JsonSerialisationUtils;
 import com.freeyourcode.testgenerator.test.TestedClass;
@@ -23,6 +24,11 @@ public class GeneratedByAgentTestMockPluginConfigWithNewObjectWithoutCall extend
 	private TestedClass testedClassStub;
 	@InjectMocks
 	private ClassWithNewObjectWithoutCall classWithNewObjectWithoutCall;
+
+	@Override
+	protected MatcherMode getMatcherMode() {
+		return MatcherMode.HARD;
+	}
 
 	@Test
 	public void testmyMethodIsCreatingANewInstanceOfTestedClassInitializedWithAlreadySetField_0() throws Exception {

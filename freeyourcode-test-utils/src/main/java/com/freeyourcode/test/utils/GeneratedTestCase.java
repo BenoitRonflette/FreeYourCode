@@ -21,6 +21,7 @@ import org.testng.annotations.BeforeMethod;
 import com.freeyourcode.test.utils.deepanalyser.DeepDiffReverter;
 import com.freeyourcode.test.utils.matchers.BasicTypeMatcherEquals;
 import com.freeyourcode.test.utils.matchers.MatcherEquals;
+import com.freeyourcode.test.utils.matchers.MediumMockitoEqMatcher;
 import com.google.common.base.Preconditions;
 
 public class GeneratedTestCase extends PowerMockTestCase {
@@ -132,6 +133,21 @@ public class GeneratedTestCase extends PowerMockTestCase {
 	 */
 	protected boolean fullMockInjection() {
 		return false;
+	}
+
+	protected MatcherMode getMatcherMode() {
+		return MatcherMode.defaultMode();
+	}
+
+	protected <T> T argEq(T object) {
+		switch (getMatcherMode()) {
+			case HARD:
+				return Mockito.eq(object);
+			case MEDIUM:
+				return MediumMockitoEqMatcher.eq(object);
+			default:
+				return object;
+		}
 	}
 
 }

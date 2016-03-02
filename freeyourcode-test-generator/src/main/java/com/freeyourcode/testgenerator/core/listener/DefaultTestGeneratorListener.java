@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.freeyourcode.prettyjson.JsonSerialisationUtils;
+import com.freeyourcode.test.utils.MatcherMode;
 import com.freeyourcode.testgenerator.core.CallOnMock;
 import com.freeyourcode.testgenerator.core.EventMap;
 import com.freeyourcode.testgenerator.core.ListenerManagerConfig;
@@ -237,7 +238,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 	}
 
 	private List<String> writeStubs() throws Exception {
-		boolean testMockitoEq = config.isTestEqualityOnStubbing();
+		MatcherMode matcherMode = config.getMatcherMode();
 
 		List<String> verifyCalledEvent = new ArrayList<String>();
 		// TODO refac en petites methodes
@@ -268,7 +269,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 
 				SignatureResolver sigResolver = createSignatureResolverForStubbing(descriptor);
 
-				int callNumberForThisMethod = testMockitoEq ? generateMocksWithParameters(mockedObjectVariableName, descriptor, sigResolver) : generateMocksWithAnyParameters(mockedObjectVariableName, descriptor, sigResolver);
+				int callNumberForThisMethod = matcherMode != MatcherMode.SOFT ? generateMocksWithParameters(mockedObjectVariableName, descriptor, sigResolver) : generateMocksWithAnyParameters(mockedObjectVariableName, descriptor, sigResolver);
 
 				// Check the call number on this method
 				sb.setLength(0);
@@ -394,7 +395,7 @@ public class DefaultTestGeneratorListener implements TestGeneratorListener {
 		for (int i = 0; i < paramClasses.size(); i++) {
 			String param = cast(paramClasses.get(i), objectArrayVarName + "[" + i + "]");
 			if (testMockitoEq) {
-				param = "Mockito.eq(" + param + ")";
+				param = "argEq(" + param + ")";
 			}
 			parameters[i] = param;
 		}

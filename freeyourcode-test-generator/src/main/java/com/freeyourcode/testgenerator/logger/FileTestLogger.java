@@ -19,6 +19,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.freeyourcode.test.utils.MatcherMode;
+import com.freeyourcode.testgenerator.core.ListenerManagerConfig;
 import com.google.common.base.Preconditions;
 
 public class FileTestLogger extends TestGeneratorLogger {
@@ -94,6 +96,8 @@ public class FileTestLogger extends TestGeneratorLogger {
 		writer.println("import org.powermock.api.mockito.PowerMockito;");
 		writer.println("import org.powermock.core.classloader.annotations.PrepareForTest;");
 		writer.println("import org.testng.annotations.Test;\n");
+
+		writer.println("import com.freeyourcode.test.utils.MatcherMode;");
 		writer.println("import com.freeyourcode.test.utils.GeneratedTestCase;");
 		writer.println("import com.freeyourcode.prettyjson.JsonSerialisationUtils;");
 
@@ -142,6 +146,15 @@ public class FileTestLogger extends TestGeneratorLogger {
 			writer.println("\t@Override");
 			writer.println("\tprotected boolean fullMockInjection() {");
 			writer.println("\t\treturn true;");
+			writer.println("\t}");
+		}
+
+		MatcherMode mode = ListenerManagerConfig.getMatcherModeFromProperties(props);
+		if (mode != MatcherMode.defaultMode()) {
+			writer.println("");
+			writer.println("\t@Override");
+			writer.println("\tprotected MatcherMode getMatcherMode() {");
+			writer.println("\t\treturn MatcherMode." + mode.name() + ";");
 			writer.println("\t}");
 		}
 
