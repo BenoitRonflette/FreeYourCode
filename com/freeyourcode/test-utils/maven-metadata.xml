@@ -4,8 +4,8 @@
   <artifactId>test-utils</artifactId>
   <versioning>
     <versions>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.2-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20160223153958</lastUpdated>
+    <lastUpdated>20160610140825</lastUpdated>
   </versioning>
 </metadata>
