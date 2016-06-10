@@ -4,8 +4,8 @@
   <artifactId>test-generator</artifactId>
   <versioning>
     <versions>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.2-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20160223155857</lastUpdated>
+    <lastUpdated>20160610140443</lastUpdated>
   </versioning>
 </metadata>
