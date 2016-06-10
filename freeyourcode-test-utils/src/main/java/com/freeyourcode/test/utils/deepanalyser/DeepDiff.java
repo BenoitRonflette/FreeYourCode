@@ -16,6 +16,7 @@ import com.google.common.primitives.Primitives;
 public class DeepDiff extends DeepAnalyser {
 
 	private final List<Diff> diffs = new ArrayList<Diff>();
+	private final boolean light;
 
 	public static class Diff {
 		public final String path;
@@ -32,11 +33,19 @@ public class DeepDiff extends DeepAnalyser {
 	}
 
 	public DeepDiff() {
+		this(false);
+	}
 
+	public DeepDiff(boolean light) {
+		this.light = light;
 	}
 
 	protected void saveDiff(Tree tree, Object o1, Object o2) {
 		diffs.add(new Diff(tree.toString(), o1, o2));
+	}
+
+	protected boolean shouldVisit(Tree tree, Object o) {
+		return super.shouldVisit(o) && (!light || tree.deep() == 0);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -69,7 +78,7 @@ public class DeepDiff extends DeepAnalyser {
 			if (!o1.equals(o2)) {
 				saveDiff(tree, o1, o2);
 			}
-		} else if (shouldVisit(o1)) {
+		} else if (shouldVisit(tree, o1)) {
 			for (Field field : getAllField(o1.getClass())) {
 				diffField(tree, field, o1, o2);
 			}
@@ -94,7 +103,7 @@ public class DeepDiff extends DeepAnalyser {
 	}
 
 	private <T> void diffBranchCollection(Tree tree, Collection<T> c1, Collection<T> c2) throws Exception {
-		if (shouldVisit(c1)) {
+		if (shouldVisit(tree, c1)) {
 			if (isNonDeterministCollection(c1.getClass()) || isNonDeterministCollection(c2.getClass())) {
 				c1 = determine(c1);
 				c2 = determine(c2);
@@ -124,7 +133,7 @@ public class DeepDiff extends DeepAnalyser {
 	}
 
 	private void diffBranchMap(Tree tree, Map<?, ?> m1, Map<?, ?> m2) throws Exception {
-		if (shouldVisit(m1)) {
+		if (shouldVisit(tree, m1)) {
 			// New set containing keys from m2 to avoid to remove m2 content when we are performing removing operations on keys2
 			Set<?> keys2 = new HashSet<Object>(m2.keySet());
 			for (Object key1 : m1.keySet()) {
@@ -153,7 +162,7 @@ public class DeepDiff extends DeepAnalyser {
 
 		if (len1 != len2) {
 			saveDiff(tree, array1, array2);
-		} else if (shouldVisit(array1)) {
+		} else if (shouldVisit(tree, array1)) {
 			for (int i = 0; i < len1; i++) {
 				tree.bottomUp(String.valueOf(i));
 				diffBranch(tree, Array.get(array1, i), Array.get(array2, i));

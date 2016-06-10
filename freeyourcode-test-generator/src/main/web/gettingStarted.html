@@ -60,6 +60,7 @@ Allowed values are :<br/>
 <ul>
 <li><b><i>soft</i></b> (default) disables this Mockito feature. This is useful if you want more flexible and tiny tests. In fact, if a value changes in your code, the mocked method won't be executed properly and the test should fail farther for another reason. So that will be difficult to know which modified field doesn't match.  With "soft" mode, the test will fail in the final check indicating the wrong field.</li>
 <li><b><i>medium</i></b>, if you call a mocked method into an unpredictable iterator (from HashMap, HashSet, etc), you cannot use the soft mode because you have no guarantees about the iterator ordering. So your mocked method execution have to depends on called arguments, however, if you cannot use the hard mode (see below), medium mode will execute a custom argument matcher which checks primitive values only.</li>
+<li><b><i>mediumLight</i></b>, like medium but checking primitive values from depth-0/depth-1 in object tree.</li>
 <li><b><i>hard</i></b> uses the Mockito.eq() matcher, however, that can works properly only if you have redefined equals() in each checked object! Moreover, these tests are least flexible (but you can change later the matcher mode in generated tests from hard to medium overriding com.freeyourcode.test.utils.GeneratedTestCase.getMatcherMode()).</li>
 </ul>
 </ul>

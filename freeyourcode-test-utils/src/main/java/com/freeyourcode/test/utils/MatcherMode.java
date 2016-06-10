@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 public enum MatcherMode {
 
-	SOFT("soft"), MEDIUM("medium"), HARD("hard");
+	SOFT("soft"), MEDIUM_LIGHT("mediumLight"), MEDIUM("medium"), HARD("hard");
 
 	private String value;
 

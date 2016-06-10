@@ -144,7 +144,9 @@ public class GeneratedTestCase extends PowerMockTestCase {
 			case HARD:
 				return Mockito.eq(object);
 			case MEDIUM:
-				return MediumMockitoEqMatcher.eq(object);
+				return MediumMockitoEqMatcher.eq(false, object);
+			case MEDIUM_LIGHT:
+				return MediumMockitoEqMatcher.eq(true, object);
 			default:
 				return object;
 		}
