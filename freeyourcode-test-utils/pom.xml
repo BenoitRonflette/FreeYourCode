@@ -6,7 +6,7 @@
 	<groupId>com.freeyourcode</groupId>
 	<artifactId>test-utils</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<description>Library to execute generated legacy code tests</description>
 
 	<properties>
