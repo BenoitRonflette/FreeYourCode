@@ -113,7 +113,7 @@ public class HibernateCompatibilityPlugin implements Plugin {
 								hEvent.setResponse(getCloner().deepClone(event.getResponse()));
 							} catch (Throwable t) {
 								t.printStackTrace();
-								log.error("onEventEnd cloning error : " + t.getMessage());
+								log.error("onEventEnd cloning error on method " + event.getDescriptor() + " : " + t.getMessage());
 							}
 							// If several listeners listen the same event, we don't have to clone params everytime !
 							hEvent.isAlreadyCloned = true;
