@@ -6,7 +6,7 @@
 	<groupId>com.freeyourcode</groupId>
 	<artifactId>prettyjson</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<description>Java JSON serialization skipping null values</description>
 
 	<properties>
