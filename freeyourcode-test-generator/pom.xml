@@ -166,13 +166,13 @@
 		<dependency>
 			<groupId>com.freeyourcode</groupId>
 			<artifactId>prettyjson</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.freeyourcode</groupId>
 			<artifactId>test-utils</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 		</dependency>
 
 		<dependency>
