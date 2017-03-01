@@ -15,6 +15,7 @@ import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.testng.PowerMockTestCase;
 import org.testng.annotations.BeforeMethod;
 
@@ -24,6 +25,7 @@ import com.freeyourcode.test.utils.matchers.MatcherEquals;
 import com.freeyourcode.test.utils.matchers.MediumMockitoEqMatcher;
 import com.google.common.base.Preconditions;
 
+@PowerMockIgnore({ "javax.management.*", "javax.xml.parsers.*", "com.sun.org.apache.xerces.*", "ch.qos.logback.*", "org.slf4j.*" })
 public class GeneratedTestCase extends PowerMockTestCase {
 
 	/**

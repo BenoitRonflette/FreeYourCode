@@ -3,10 +3,12 @@ package com.freeyourcode.testgenerator.test.agent;
 import java.lang.reflect.Method;
 
 import org.mockito.internal.util.Primitives;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.testng.Assert;
 
 import com.freeyourcode.testgenerator.agent.Agent;
 
+@PowerMockIgnore({ "javax.management.*", "javax.xml.parsers.*", "com.sun.org.apache.xerces.*", "ch.qos.logback.*", "org.slf4j.*" })
 public abstract class AgentTest {
 
 	private InstrumentationMock instrumentation;
